@@ -45,3 +45,5 @@ _testmain.go
 *.prof
 
 .idea/
+testdata/
+!cmdutils/testdata/service.json
