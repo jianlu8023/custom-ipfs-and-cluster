@@ -1,2 +1,11 @@
 .idea/
 log/
+
+testdata/
+
+!testdata/gaeger/docker-compose.yaml
+
+!testdata/cluster/service.json
+
+!testdata/ipfs/webui.car
+!testdata/ipfs/swarm.key
