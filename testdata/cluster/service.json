@@ -1,7 +1,7 @@
 {
   "cluster": {
     "peername": "linux-110",
-    "secret": "4b05701bd137db4bea794771d696880ae5f4c7925053188d4dc45ae4528654ba",
+    "secret": "79ca56067cfacd5415fc5b8c5617afc8e138c0ef54c814fe1846b5a14b31e6f3",
     "leave_on_shutdown": false,
     "listen_multiaddress": [
       "/ip4/0.0.0.0/tcp/9096",
