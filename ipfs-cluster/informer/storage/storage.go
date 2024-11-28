@@ -134,7 +134,7 @@ func (storage *Informer) GetMetrics(ctx context.Context) []api.Metric {
 	}
 
 	valid := err == nil
-	logger.Infof("getting storage partition %v info %v valid %v", storage.config.MetricMount, d.String(), valid)
+	logger.Debugf("getting storage partition %v info %v valid %v", storage.config.MetricMount, d.String(), valid)
 
 	m := api.Metric{
 		Name:          storage.Name(),
