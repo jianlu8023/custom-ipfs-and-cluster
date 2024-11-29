@@ -24,6 +24,8 @@ import (
 
 // ID returns information about the cluster Peer.
 func (c *defaultClient) ID(ctx context.Context) (api.ID, error) {
+	fmt.Println(">>> client methods.go defaultClient.ID")
+	logger.Infof(">>> client methods.go defaultClient.ID")
 	ctx, span := trace.StartSpan(ctx, "client/ID")
 	defer span.End()
 
@@ -34,6 +36,8 @@ func (c *defaultClient) ID(ctx context.Context) (api.ID, error) {
 
 // Peers requests ID information for all cluster peers.
 func (c *defaultClient) Peers(ctx context.Context, out chan<- api.ID) error {
+	fmt.Println(">>> client methods.go defaultClient.Peers")
+	logger.Infof(">>> client methods.go defaultClient.Peers")
 	defer close(out)
 
 	ctx, span := trace.StartSpan(ctx, "client/Peers")
@@ -579,6 +583,7 @@ func statusReached(target api.TrackerStatus, gblPinInfo api.GlobalPinInfo, limit
 
 // logic drawn from go-ipfs-cmds/cli/parse.go: appendFile
 func makeSerialFile(fpath string, params api.AddParams) (string, files.Node, error) {
+	fmt.Println(">>> client methods.go makeSerialFile fpath ", fpath, " params ", params)
 	if fpath == "." {
 		cwd, err := os.Getwd()
 		if err != nil {
@@ -621,12 +626,14 @@ func (c *defaultClient) Add(
 	params api.AddParams,
 	out chan<- api.AddedOutput,
 ) error {
+	fmt.Println(">>> client methods.go defaultClient.Add")
 	ctx, span := trace.StartSpan(ctx, "client/Add")
 	defer span.End()
 
 	addFiles := make([]files.DirEntry, len(paths))
 	for i, p := range paths {
 		u, err := url.Parse(p)
+		fmt.Println(">>> client methods.go defaultClient.Add url.Parse ", u)
 		if err != nil {
 			close(out)
 			return fmt.Errorf("error parsing path: %s", err)
@@ -634,10 +641,17 @@ func (c *defaultClient) Add(
 		var name string
 		var addFile files.Node
 		if strings.HasPrefix(u.Scheme, "http") {
+			fmt.Println(">>> client methods.go defaultClient.Add strings.HasPrefix u.Scheme ", u.Scheme, " == http")
 			addFile = files.NewWebFile(u)
 			name = path.Base(u.Path)
+			fmt.Println(">>> client methods.go defaultClient.Add strings.HasPrefix u.Scheme ", u.Scheme,
+				" == http", " path.Base ", name)
+
 		} else {
+			fmt.Println(">>> client methods.go defaultClient.Add strings.HasPrefix u.Scheme ", u.Scheme, " != http")
 			if params.NoCopy {
+				fmt.Println(">>> client methods.go defaultClient.Add strings.HasPrefix u.Scheme ", u.Scheme, " != http",
+					" params.NoCopy ", params.NoCopy)
 				close(out)
 				return fmt.Errorf("nocopy option is only valid for URLs")
 			}
@@ -650,6 +664,7 @@ func (c *defaultClient) Add(
 		addFiles[i] = files.FileEntry(name, addFile)
 	}
 
+	fmt.Println(">>> client methods.go defaultClient.Add addFiles ", addFiles)
 	sliceFile := files.NewSliceDirectory(addFiles)
 	// If `form` is set to true, the multipart data will have
 	// a Content-Type of 'multipart/form-data', if `form` is false,
@@ -678,7 +693,8 @@ func (c *defaultClient) AddMultiFile(
 	if err != nil {
 		return err
 	}
-
+	fmt.Println(">>> client methods.go defaultClient.AddMultiFile queryStr ", queryStr)
+	fmt.Println(">>> client methods.go defaultClient.AddMultiFile multiFileR ", multiFileR)
 	// our handler decodes an AddedOutput and puts it
 	// in the out channel.
 	handler := func(dec *json.Decoder) error {

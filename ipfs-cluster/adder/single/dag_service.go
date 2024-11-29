@@ -4,6 +4,7 @@ package single
 
 import (
 	"context"
+	"fmt"
 	"sync"
 
 	adder "github.com/ipfs-cluster/ipfs-cluster/adder"
@@ -41,6 +42,8 @@ type DAGService struct {
 // New returns a new Adder with the given rpc Client. The client is used
 // to perform calls to IPFS.BlockStream and Pin content on Cluster.
 func New(ctx context.Context, rpc *rpc.Client, opts api.AddParams, local bool) *DAGService {
+	logger.Infof(">>> single dag_service.go New")
+	fmt.Println(">>> single dag_service.go New")
 	// ensure don't Add something and pin it in direct mode.
 	opts.Mode = api.PinModeRecursive
 	return &DAGService{
@@ -56,6 +59,8 @@ func New(ctx context.Context, rpc *rpc.Client, opts api.AddParams, local bool) *
 
 // Add puts the given node in the destination peers.
 func (dgs *DAGService) Add(ctx context.Context, node ipld.Node) error {
+	logger.Infof(">>> single dag_service.go DAGService.Add")
+	fmt.Println(">>> single dag_service.go DAGService.Add")
 	// Avoid adding the same node multiple times in a row.
 	// This is done by the ipfsadd-er, because some nodes are added
 	// via dagbuilder, then via MFS, and root nodes once more.
@@ -180,6 +185,8 @@ type recentBlocks struct {
 }
 
 func (rc *recentBlocks) Add(n ipld.Node) {
+	logger.Infof(">>> single dag_service.go recentBlocks.Add")
+	fmt.Println(">>> single dag_service.go recentBlocks.Add")
 	rc.blocks[rc.cur] = n.Cid()
 	rc.cur = (rc.cur + 1) % 2
 }

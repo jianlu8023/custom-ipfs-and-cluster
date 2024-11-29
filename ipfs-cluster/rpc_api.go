@@ -176,6 +176,7 @@ func (rpcapi *ClusterRPCAPI) Pin(ctx context.Context, in api.Pin, out *api.Pin) 
 	// we do not call the Pin method directly since that method does not
 	// allow to pin other than regular DataType pins. The adder will
 	// however send Meta, Shard and ClusterDAG pins.
+	logger.Infof(">>> ipfscluster rpc_api.go ClusterRPCAPI.Pin")
 	pin, _, err := rpcapi.c.pin(ctx, in, []peer.ID{})
 	if err != nil {
 		return err
@@ -447,6 +448,7 @@ func (rpcapi *ClusterRPCAPI) IPFSID(ctx context.Context, in peer.ID, out *api.IP
 
 // Track runs PinTracker.Track().
 func (rpcapi *PinTrackerRPCAPI) Track(ctx context.Context, in api.Pin, out *struct{}) error {
+	logger.Infof(">>> ipfscluster rpc_api.go PinTrackerRPCAPI.Track")
 	ctx, span := trace.StartSpan(ctx, "rpc/tracker/Track")
 	defer span.End()
 	return rpcapi.tracker.Track(ctx, in)
@@ -511,6 +513,7 @@ func (rpcapi *PinTrackerRPCAPI) PinQueueSize(ctx context.Context, in struct{}, o
 
 // Pin runs IPFSConnector.Pin().
 func (rpcapi *IPFSConnectorRPCAPI) Pin(ctx context.Context, in api.Pin, out *struct{}) error {
+	logger.Infof(">>> ipfscluster rpc_api.go IPFSConnectorRPCAPI.Pin")
 	ctx, span := trace.StartSpan(ctx, "rpc/ipfsconn/IPFSPin")
 	defer span.End()
 	return rpcapi.ipfs.Pin(ctx, in)

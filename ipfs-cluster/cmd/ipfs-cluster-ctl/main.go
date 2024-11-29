@@ -484,8 +484,8 @@ content.
 				}
 				p.NoPin = c.Bool("no-pin")
 				p.Format = c.String("format")
-				//p.Shard = shard
-				//p.ShardSize = c.Uint64("shard-size")
+				// p.Shard = shard
+				// p.ShardSize = c.Uint64("shard-size")
 				p.Shard = false
 				p.Recursive = c.Bool("recursive")
 				p.Local = c.Bool("local")
@@ -563,7 +563,7 @@ content.
 						checkErr("waiting for pin status", werr)
 					}
 				}()
-
+				fmt.Println(">>> main main.go add paths ", paths, " p ", p)
 				cerr := globalClient.Add(ctx, paths, p, out)
 				wg.Wait()
 				formatResponse(c, nil, cerr)

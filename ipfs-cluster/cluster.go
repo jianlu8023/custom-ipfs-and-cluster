@@ -555,7 +555,7 @@ func (c *Cluster) watchPeers() {
 		case <-c.ctx.Done():
 			return
 		case <-ticker.C:
-			//logger.Debugf("%s watching peers", c.id)
+			// logger.Debugf("%s watching peers", c.id)
 			hasMe := false
 			peers, err := c.consensus.Peers(c.ctx)
 			if err != nil {
@@ -635,6 +635,7 @@ func (c *Cluster) vacatePeer(ctx context.Context, p peer.ID) {
 // repinFromPeer triggers a repin on a given pin object blacklisting one of the
 // allocations.
 func (c *Cluster) repinFromPeer(ctx context.Context, p peer.ID, pin api.Pin) {
+	logger.Infof(">>> ipfscluste cluster.go Cluster.repinFromPeer")
 	ctx, span := trace.StartSpan(ctx, "cluster/repinFromPeer")
 	defer span.End()
 
@@ -1399,6 +1400,7 @@ func (c *Cluster) PinGet(ctx context.Context, h api.Cid) (api.Pin, error) {
 // If the Update option is set, the pin options (including allocations) will
 // be copied from an existing one. This is equivalent to running PinUpdate.
 func (c *Cluster) Pin(ctx context.Context, h api.Cid, opts api.PinOptions) (api.Pin, error) {
+	logger.Infof(">>> ipfscluster cluster.go Cluster.Pin")
 	ctx, span := trace.StartSpan(ctx, "cluster/Pin")
 	defer span.End()
 
@@ -1450,7 +1452,7 @@ func checkPinType(pin api.Pin) error {
 		// if existing.ReplicationFactorMin != rplMin ||
 		//	existing.ReplicationFactorMax != rplMax {
 		//	return errors.New("shard update with wrong repl factors")
-		//}
+		// }
 	case api.ClusterDAGType:
 		if pin.MaxDepth != 0 {
 			return errors.New("must pin roots directly")
@@ -1521,6 +1523,7 @@ func (c *Cluster) pin(
 	pin api.Pin,
 	blacklist []peer.ID,
 ) (api.Pin, bool, error) {
+	logger.Infof(">>> ipfscluster cluster.go Clustrer.pin")
 	ctx, span := trace.StartSpan(ctx, "cluster/pin")
 	defer span.End()
 

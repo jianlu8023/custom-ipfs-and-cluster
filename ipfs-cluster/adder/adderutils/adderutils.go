@@ -4,6 +4,7 @@ package adderutils
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"mime/multipart"
 	"net/http"
 	"sync"
@@ -31,6 +32,8 @@ func AddMultipartHTTPHandler(
 	w http.ResponseWriter,
 	outputTransform func(api.AddedOutput) interface{},
 ) (api.Cid, error) {
+	logger.Infof(">>> adderutils adderutils.go AddmultipartHTTPHandler")
+	fmt.Println(">>> adderutils adderutils.go AddmultipartHTTPHandler")
 	var dags adder.ClusterDAGService
 	output := make(chan api.AddedOutput, 200)
 
@@ -113,6 +116,8 @@ func AddMultipartHTTPHandler(
 }
 
 func streamOutput(w http.ResponseWriter, output chan api.AddedOutput, transform func(api.AddedOutput) interface{}) {
+	logger.Infof(">>> adderutils adderutils.go streamOutput")
+	fmt.Println(">>> adderutils adderutils.go streamOutput")
 	flusher, flush := w.(http.Flusher)
 	enc := json.NewEncoder(w)
 	for v := range output {
@@ -128,6 +133,8 @@ func streamOutput(w http.ResponseWriter, output chan api.AddedOutput, transform 
 }
 
 func buildOutput(output chan api.AddedOutput, transform func(api.AddedOutput) interface{}) []interface{} {
+	fmt.Println(">>> adderutils adderutils.go buildOutput")
+	logger.Infof(">>> adderutils adderutils.go buildOutput")
 	var finalOutput []interface{}
 	for v := range output {
 		finalOutput = append(finalOutput, transform(v))

@@ -208,6 +208,8 @@ func (api *API) routes(c *rpc.Client) []common.Route {
 }
 
 func (api *API) idHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(">>> rest restapi.go API.idHandler")
+	logger.Infof(">>> rest restapi.go API.idHandler")
 	var id types.ID
 	err := api.rpcClient.CallContext(
 		r.Context(),
@@ -291,6 +293,8 @@ func (api *API) alertsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *API) addHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(">>> rest restapi.go API.addHandler")
+	logger.Infof(">>> rest restapi.go API.addHandler")
 	reader, err := r.MultipartReader()
 	if err != nil {
 		api.SendResponse(w, http.StatusBadRequest, err, nil)
@@ -317,6 +321,8 @@ func (api *API) addHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *API) peerListHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(">>> rest restapi.go API.peerListHandler")
+	logger.Infof(">>> rest restapi.go API.peerListHandler")
 	in := make(chan struct{})
 	close(in)
 	out := make(chan types.ID, common.StreamChannelSize)
@@ -342,6 +348,8 @@ func (api *API) peerListHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *API) peerAddHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(">>> rest restapi.go API.peerAddHandler")
+	logger.Infof(">>> rest restapi.go API.peerAddHandler")
 	dec := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 
@@ -371,6 +379,8 @@ func (api *API) peerAddHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *API) peerRemoveHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(">>> rest restapi.go API.peerRemoveHandler")
+	logger.Infof(">>> rest restapi.go API.peerRemoveHandler")
 	if p := api.ParsePidOrFail(w, r); p != "" {
 		err := api.rpcClient.CallContext(
 			r.Context(),
@@ -385,6 +395,8 @@ func (api *API) peerRemoveHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *API) pinHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(">>> rest restapi.go API.pinHandler")
+	logger.Infof(">>> rest restapi.go API.pinHandler")
 	if pin := api.ParseCidOrFail(w, r); pin.Defined() {
 		api.config.Logger.Debugf("rest api pinHandler: %s", pin.Cid)
 		// span.AddAttributes(trace.StringAttribute("cid", pin.Cid))
@@ -403,6 +415,8 @@ func (api *API) pinHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *API) unpinHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(">>> rest restapi.go API.unpinHandler")
+	logger.Infof(">>> rest restapi.go API.unpinHandler")
 	if pin := api.ParseCidOrFail(w, r); pin.Defined() {
 		api.config.Logger.Debugf("rest api unpinHandler: %s", pin.Cid)
 		// span.AddAttributes(trace.StringAttribute("cid", pin.Cid))
@@ -421,6 +435,8 @@ func (api *API) unpinHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *API) pinPathHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(">>> rest restapi.go API.pinPathHandler")
+	logger.Infof(">>> rest restapi.go API.pinPathHandler")
 	var pin types.Pin
 	if pinpath := api.ParsePinPathOrFail(w, r); pinpath.Defined() {
 		api.config.Logger.Debugf("rest api pinPathHandler: %s", pinpath.Path)
@@ -439,6 +455,8 @@ func (api *API) pinPathHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *API) unpinPathHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(">>> rest restapi.go API.unpinPathHandler")
+	logger.Infof(">>> rest restapi.go API.unpinPathHandler")
 	var pin types.Pin
 	if pinpath := api.ParsePinPathOrFail(w, r); pinpath.Defined() {
 		api.config.Logger.Debugf("rest api unpinPathHandler: %s", pinpath.Path)
@@ -456,6 +474,8 @@ func (api *API) unpinPathHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *API) allocationsHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(">>> rest restapi.go API.allocationsHandler")
+	logger.Infof(">>> rest restapi.go API.allocationsHandler")
 	queryValues := r.URL.Query()
 	filterStr := queryValues.Get("filter")
 	var filter types.PinType
@@ -517,6 +537,8 @@ func (api *API) allocationsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *API) allocationHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(">>> rest restapi.go API.allocationHandler")
+	logger.Infof(">>> rest restapi.go API.allocationHandler")
 	if pin := api.ParseCidOrFail(w, r); pin.Defined() {
 		var pinResp types.Pin
 		err := api.rpcClient.CallContext(
@@ -532,6 +554,8 @@ func (api *API) allocationHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *API) statusAllHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(">>> rest restapi.go API.statusAllHandler")
+	logger.Infof(">>> rest restapi.go API.statusAllHandler")
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
 
@@ -817,6 +841,8 @@ func (api *API) recoverHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *API) repoGCHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(">>> rest restapi.go API.repoGCHandler")
+	logger.Infof(">>> rest restapi.go API.repoGCHandler")
 	queryValues := r.URL.Query()
 	local := queryValues.Get("local")
 

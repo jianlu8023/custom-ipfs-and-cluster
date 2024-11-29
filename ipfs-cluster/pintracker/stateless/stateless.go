@@ -168,6 +168,7 @@ func applyPinF(pinF func(*optracker.Operation) error, op *optracker.Operation) b
 }
 
 func (spt *Tracker) pin(op *optracker.Operation) error {
+	logger.Infof(">>> stateless stateless.go Tracker.pin")
 	ctx, span := trace.StartSpan(op.Context(), "tracker/stateless/pin")
 	defer span.End()
 
@@ -207,6 +208,7 @@ func (spt *Tracker) unpin(op *optracker.Operation) error {
 
 // Enqueue puts a new operation on the queue, unless ongoing exists.
 func (spt *Tracker) enqueue(ctx context.Context, c api.Pin, typ optracker.OperationType) error {
+	logger.Infof(">>> stateless stateless.go Tracker.enqueue")
 	ctx, span := trace.StartSpan(ctx, "tracker/stateless/enqueue")
 	defer span.End()
 
@@ -277,6 +279,7 @@ func (spt *Tracker) Shutdown(ctx context.Context) error {
 // Track tells the StatelessPinTracker to start managing a Cid,
 // possibly triggering Pin operations on the IPFS daemon.
 func (spt *Tracker) Track(ctx context.Context, c api.Pin) error {
+	logger.Infof(">>> stateless stateless.go Tracker.Track")
 	ctx, span := trace.StartSpan(ctx, "tracker/stateless/Track")
 	defer span.End()
 

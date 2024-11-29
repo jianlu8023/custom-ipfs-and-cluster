@@ -109,6 +109,8 @@ func (lw logWriter) Write(b []byte) (int, error) {
 
 // New returns and ipfs Proxy component
 func New(cfg *Config) (*Server, error) {
+	logger.Infof(">>> ipfsproxy ipfsproxy.go New")
+	fmt.Println(">>> ipfsproxy ipfsproxy.go New")
 	err := cfg.Validate()
 	if err != nil {
 		return nil, err
@@ -359,6 +361,8 @@ func ipfsErrorResponder(w http.ResponseWriter, errMsg string, code int) {
 }
 
 func (proxy *Server) pinOpHandler(op string, w http.ResponseWriter, r *http.Request) {
+	logger.Infof(">>> ipfsproxy ipfsproxy.go Server.pinOpHandler")
+	fmt.Println(">>> ipfsproxy ipfsproxy.go Server.pinOpHandler")
 	proxy.setHeaders(w.Header(), r)
 
 	q := r.URL.Query()
@@ -394,14 +398,20 @@ func (proxy *Server) pinOpHandler(op string, w http.ResponseWriter, r *http.Requ
 }
 
 func (proxy *Server) pinHandler(w http.ResponseWriter, r *http.Request) {
+	logger.Infof(">>> ipfsproxy ipfsproxy.go Server.pinHandler")
+	fmt.Println(">>> ipfsproxy ipfsproxy.go Server.pinHandler")
 	proxy.pinOpHandler("PinPath", w, r)
 }
 
 func (proxy *Server) unpinHandler(w http.ResponseWriter, r *http.Request) {
+	logger.Infof(">>> ipfsproxy ipfsproxy.go Server.unpinHandler")
+	fmt.Println(">>> ipfsproxy ipfsproxy.go Server.unpinHandler")
 	proxy.pinOpHandler("UnpinPath", w, r)
 }
 
 func (proxy *Server) pinLsHandler(w http.ResponseWriter, r *http.Request) {
+	logger.Infof(">>> ipfsproxy ipfsproxy.go Server.pinLsHandler")
+	fmt.Println(">>> ipfsproxy ipfsproxy.go Server.pinLsHandler")
 	proxy.setHeaders(w.Header(), r)
 
 	arg := r.URL.Query().Get("arg")
@@ -510,6 +520,8 @@ func (proxy *Server) pinLsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (proxy *Server) pinUpdateHandler(w http.ResponseWriter, r *http.Request) {
+	logger.Infof(">>> ipfsproxy ipfsproxy.go Server.pinUpdateHandler")
+	fmt.Println(">>> ipfsproxy ipfsproxy.go Server.pinUpdateHandler")
 	ctx, span := trace.StartSpan(r.Context(), "ipfsproxy/pinUpdateHandler")
 	defer span.End()
 
@@ -603,6 +615,8 @@ func (proxy *Server) pinUpdateHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (proxy *Server) addHandler(w http.ResponseWriter, r *http.Request) {
+	logger.Infof(">>> ipfsproxy ipfsproxy.go Server.addHandler")
+	fmt.Println(">>> ipfsproxy ipfsproxy.go Server.addHandler")
 	proxy.setHeaders(w.Header(), r)
 
 	reader, err := r.MultipartReader()
@@ -664,6 +678,8 @@ func (proxy *Server) addHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (proxy *Server) repoStatHandler(w http.ResponseWriter, r *http.Request) {
+	logger.Infof(">>> ipfsproxy ipfsproxy.go Server.repoStatHandler")
+	fmt.Println(">>> ipfsproxy ipfsproxy.go Server.repoStatHandler")
 	proxy.setHeaders(w.Header(), r)
 
 	peers := make([]peer.ID, 0)
@@ -724,6 +740,8 @@ type ipfsRepoGCResp struct {
 }
 
 func (proxy *Server) repoGCHandler(w http.ResponseWriter, r *http.Request) {
+	logger.Infof(">>> ipfsproxy ipfsproxy.go Server.repoGCHandler")
+	fmt.Println(">>> ipfsproxy ipfsproxy.go Server.repoGCHandler")
 	queryValues := r.URL.Query()
 	streamErrors := queryValues.Get("stream-errors") == "true"
 	// ignoring `quiet` since it only affects text output
@@ -779,6 +797,8 @@ type ipfsBlockPutResp struct {
 }
 
 func (proxy *Server) blockPutHandler(w http.ResponseWriter, r *http.Request) {
+	logger.Infof(">>> ipfsproxy ipfsproxy.go Server.blockPutHandler")
+	fmt.Println(">>> ipfsproxy ipfsproxy.go Server.blockPutHandler")
 	if r.URL.Query().Get("pin") != "true" {
 		proxy.reverseProxy.ServeHTTP(w, r)
 		return
@@ -857,6 +877,8 @@ type ipfsDagPutResp struct {
 }
 
 func (proxy *Server) dagPutHandler(w http.ResponseWriter, r *http.Request) {
+	logger.Infof(">>> ipfsproxy ipfsproxy.go Server.dagPutHandler")
+	fmt.Println(">>> ipfsproxy ipfsproxy.go Server.dagPutHandler")
 	// Note this mostly duplicates blockPutHandler
 	if r.URL.Query().Get("pin") != "true" {
 		proxy.reverseProxy.ServeHTTP(w, r)
@@ -975,6 +997,8 @@ func slashHandler(origHandler http.HandlerFunc) http.HandlerFunc {
 // pathOrCidPath returns a path.Path built from the argument. It keeps the old
 // behavior by building a path from a CID string.
 func pathOrCidPath(str string) (path.Path, error) {
+	logger.Infof(">>> ipfsproxy ipfsproxy.go pathOrCidPath")
+	fmt.Println(">>> ipfsproxy ipfsproxy.go pathOrCidPath")
 	p, err := path.NewPath(str)
 	if err == nil {
 		return p, nil

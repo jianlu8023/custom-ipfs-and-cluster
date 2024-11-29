@@ -92,6 +92,8 @@ type Adder struct {
 //
 // An Adder may only be used once.
 func New(ds ClusterDAGService, p api.AddParams, out chan api.AddedOutput) *Adder {
+	logger.Infof(">>> adder adder.go New")
+	fmt.Println(">>> adder adder.go New")
 	// Discard all progress update output as the caller has not provided
 	// a channel for them to listen on.
 	if out == nil {
@@ -120,6 +122,8 @@ func (a *Adder) setContext(ctx context.Context) {
 // FromMultipart adds content from a multipart.Reader. The adder will
 // no longer be usable after calling this method.
 func (a *Adder) FromMultipart(ctx context.Context, r *multipart.Reader) (api.Cid, error) {
+	logger.Infof(">>> adder adder.go Adder.FromMultipart")
+	fmt.Println(">>> adder adder.go Adder.FromMultipart")
 	logger.Debugf("adding from multipart with params: %+v", a.params)
 
 	f, err := files.NewFileFromPartReader(r, "multipart/form-data")
@@ -284,6 +288,8 @@ func newCarAdder(ctx context.Context, dgs ClusterDAGService, params api.AddParam
 // Add takes a node which should be a CAR file and nothing else and
 // adds its blocks using the ClusterDAGService.
 func (ca *carAdder) Add(name string, fn files.Node) (api.Cid, error) {
+	logger.Infof(">>> adder adder.go carAdder.Add")
+	fmt.Println(">>> adder adder.go carAdder.Add")
 	if ca.params.Wrap {
 		return api.CidUndef, errors.New("cannot wrap a CAR file upload")
 	}

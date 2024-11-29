@@ -71,6 +71,8 @@ func makeDAGSimple(ctx context.Context, dagObj map[string]cid.Cid) (ipld.Node, e
 // is always the root of the shardDAG, i.e. the ipld node that should be
 // recursively pinned to track the shard
 func makeDAG(ctx context.Context, dagObj map[string]cid.Cid) ([]ipld.Node, error) {
+	logger.Infof(">>> sharding dag.fo makeDAG")
+	fmt.Println(">>> sharding dag.fo makeDAG")
 	// FIXME: We have a 4MB limit on the block size enforced by bitswap:
 	// https://github.com/libp2p/go-libp2p/core/blob/master/network/network.go#L23
 
@@ -116,7 +118,7 @@ func makeDAG(ctx context.Context, dagObj map[string]cid.Cid) ([]ipld.Node, error
 // size (cid sizes will vary in general, cluster dag cbor format may
 // grow to vary unpredictably in size)
 // byteCount returns the number of bytes the dagObj will occupy when
-//serialized into an ipld DAG
+// serialized into an ipld DAG
 /*func byteCount(obj dagObj) uint64 {
 	// 1 byte map overhead
 	// for each entry:
