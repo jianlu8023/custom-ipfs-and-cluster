@@ -1,11 +1,13 @@
 module github.com/ipfs/go-ipfs-example-plugin
 
-go 1.23
+go 1.22
+
+toolchain go1.22.2
 
 require (
 	github.com/ipfs/go-datastore v0.6.0
 	github.com/ipfs/go-ipfs-delay v0.0.1
-	github.com/ipfs/kubo v0.30.0
+	github.com/ipfs/kubo v0.28.0
 )
 
 require (
