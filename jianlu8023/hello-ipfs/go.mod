@@ -1,8 +1,6 @@
 module gitee.com/jianlu8023/hello-ipfs
 
-go 1.22.0
-
-toolchain go1.22.2
+go 1.22
 
 require github.com/ipfs/kubo v0.28.0
 
