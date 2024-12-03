@@ -1,0 +1,31 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    ignore:
+      # These are tied to the IPFS version we target
+      - dependency-name: "github.com/ipfs/go-bitswap"
+      - dependency-name: "github.com/ipfs/go-cid"
+      - dependency-name: "github.com/ipfs/go-log"
+      - dependency-name: "github.com/ipfs/kubo"
+      - dependency-name: "github.com/libp2p/go-buffer-pool"
+      - dependency-name: "github.com/libp2p/go-libp2p-core"
+      - dependency-name: "github.com/multiformats/go-multiaddr"
+      - dependency-name: "github.com/prometheus/client_golang"
+      - dependency-name: "go.uber.org/fx"
+      - dependency-name: "go.uber.org/zap"
+
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    ignore:
+      # This is the kubo base image
+      - dependency-name: "ipfs/kubo"

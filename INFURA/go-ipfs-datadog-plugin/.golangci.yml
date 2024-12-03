@@ -1,0 +1,9 @@
+linters:
+  enable:
+    - gofmt
+issues:
+  exclude-use-default: true
+  max-same-issues: 0
+  new: true
+run:
+  timeout: 5m
