@@ -26,4 +26,4 @@ func (p Plugin) Close() error {
 	return nil
 }
 
-var _ plugin.Plugin = &Plugin{}
+var _ plugin.Plugin = (*Plugin)(nil)
