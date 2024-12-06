@@ -563,7 +563,6 @@ content.
 						checkErr("waiting for pin status", werr)
 					}
 				}()
-				fmt.Println(">>> main main.go add paths ", paths, " p ", p)
 				cerr := globalClient.Add(ctx, paths, p, out)
 				wg.Wait()
 				formatResponse(c, nil, cerr)

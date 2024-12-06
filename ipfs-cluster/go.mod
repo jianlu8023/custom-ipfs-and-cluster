@@ -57,6 +57,7 @@ require (
 	github.com/rs/cors v1.10.1
 	github.com/shirou/gopsutil/v4 v4.24.8
 	github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
+	github.com/tjfoc/gmsm v1.4.1
 	github.com/tv42/httpunix v0.0.0-20150427012821-b75d8614f926
 	github.com/ugorji/go/codec v1.2.12
 	github.com/urfave/cli v1.22.14

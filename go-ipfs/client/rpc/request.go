@@ -2,7 +2,6 @@ package rpc
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"strings"
 )
@@ -18,7 +17,6 @@ type Request struct {
 }
 
 func NewRequest(ctx context.Context, url, command string, args ...string) *Request {
-	fmt.Println(">>> rpc request.go NewRequest url ", url, " command ", command, " args ", args)
 
 	if !strings.HasPrefix(url, "http") {
 		url = "http://" + url

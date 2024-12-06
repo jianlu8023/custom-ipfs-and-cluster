@@ -75,7 +75,7 @@ func (api *BlockAPI) Put(ctx context.Context, r io.Reader, opts ...caopts.BlockP
 }
 
 func (api *BlockAPI) Get(ctx context.Context, p path.Path) (io.Reader, error) {
-	fmt.Println(">>> rpc block.go BlockAPI Get")
+
 	resp, err := api.core().Request("block/get", p.String()).Send(ctx)
 	if err != nil {
 		return nil, err

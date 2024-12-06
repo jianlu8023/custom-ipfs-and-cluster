@@ -53,7 +53,7 @@ func CheckBlockSize(req *cmds.Request, size uint64) error {
 // PathOrCidPath returns a path.Path built from the argument. It keeps the old
 // behaviour by building a path from a CID string.
 func PathOrCidPath(str string) (path.Path, error) {
-	fmt.Println(">>> cmdutils utils.go PathOrCidPath")
+
 	p, err := path.NewPath(str)
 	if err == nil {
 		return p, nil

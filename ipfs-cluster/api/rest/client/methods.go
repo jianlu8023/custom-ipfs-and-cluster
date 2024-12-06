@@ -24,8 +24,7 @@ import (
 
 // ID returns information about the cluster Peer.
 func (c *defaultClient) ID(ctx context.Context) (api.ID, error) {
-	fmt.Println(">>> client methods.go defaultClient.ID")
-	logger.Infof(">>> client methods.go defaultClient.ID")
+	logger.Debugf("default clinet ID")
 	ctx, span := trace.StartSpan(ctx, "client/ID")
 	defer span.End()
 
@@ -36,8 +35,7 @@ func (c *defaultClient) ID(ctx context.Context) (api.ID, error) {
 
 // Peers requests ID information for all cluster peers.
 func (c *defaultClient) Peers(ctx context.Context, out chan<- api.ID) error {
-	fmt.Println(">>> client methods.go defaultClient.Peers")
-	logger.Infof(">>> client methods.go defaultClient.Peers")
+	logger.Debugf("default clinet Peers")
 	defer close(out)
 
 	ctx, span := trace.StartSpan(ctx, "client/Peers")
@@ -63,6 +61,7 @@ type peerAddBody struct {
 
 // PeerAdd adds a new peer to the cluster.
 func (c *defaultClient) PeerAdd(ctx context.Context, pid peer.ID) (api.ID, error) {
+	logger.Debugf("default clinet PeerAdd")
 	ctx, span := trace.StartSpan(ctx, "client/PeerAdd")
 	defer span.End()
 
@@ -79,6 +78,7 @@ func (c *defaultClient) PeerAdd(ctx context.Context, pid peer.ID) (api.ID, error
 
 // PeerRm removes a current peer from the cluster
 func (c *defaultClient) PeerRm(ctx context.Context, id peer.ID) error {
+	logger.Debugf("default clinet PeerRm")
 	ctx, span := trace.StartSpan(ctx, "client/PeerRm")
 	defer span.End()
 
@@ -88,6 +88,7 @@ func (c *defaultClient) PeerRm(ctx context.Context, id peer.ID) error {
 // Pin tracks a Cid with the given replication factor and a name for
 // human-friendliness.
 func (c *defaultClient) Pin(ctx context.Context, ci api.Cid, opts api.PinOptions) (api.Pin, error) {
+	logger.Debugf("default clinet Pin")
 	ctx, span := trace.StartSpan(ctx, "client/Pin")
 	defer span.End()
 
@@ -113,6 +114,7 @@ func (c *defaultClient) Pin(ctx context.Context, ci api.Cid, opts api.PinOptions
 
 // Unpin untracks a Cid from cluster.
 func (c *defaultClient) Unpin(ctx context.Context, ci api.Cid) (api.Pin, error) {
+	logger.Debugf("default clinet Unpin")
 	ctx, span := trace.StartSpan(ctx, "client/Unpin")
 	defer span.End()
 	var pin api.Pin
@@ -122,6 +124,7 @@ func (c *defaultClient) Unpin(ctx context.Context, ci api.Cid) (api.Pin, error) 
 
 // PinPath allows to pin an element by the given IPFS path.
 func (c *defaultClient) PinPath(ctx context.Context, path string, opts api.PinOptions) (api.Pin, error) {
+	logger.Debugf("default clinet PinPath")
 	ctx, span := trace.StartSpan(ctx, "client/PinPath")
 	defer span.End()
 
@@ -156,6 +159,7 @@ func (c *defaultClient) PinPath(ctx context.Context, path string, opts api.PinOp
 // UnpinPath allows to unpin an item by providing its IPFS path.
 // It returns the unpinned api.Pin information of the resolved Cid.
 func (c *defaultClient) UnpinPath(ctx context.Context, p string) (api.Pin, error) {
+	logger.Debugf("default clinet UnpinPath")
 	ctx, span := trace.StartSpan(ctx, "client/UnpinPath")
 	defer span.End()
 
@@ -175,6 +179,7 @@ func (c *defaultClient) UnpinPath(ctx context.Context, p string) (api.Pin, error
 // Allocations returns the consensus state listing all tracked items and
 // the peers that should be pinning them.
 func (c *defaultClient) Allocations(ctx context.Context, filter api.PinType, out chan<- api.Pin) error {
+	logger.Debugf("default clinet Allocations")
 	defer close(out)
 
 	ctx, span := trace.StartSpan(ctx, "client/Allocations")
@@ -221,6 +226,7 @@ func (c *defaultClient) Allocations(ctx context.Context, filter api.PinType, out
 
 // Allocation returns the current allocations for a given Cid.
 func (c *defaultClient) Allocation(ctx context.Context, ci api.Cid) (api.Pin, error) {
+	logger.Debugf("default clinet Allocation")
 	ctx, span := trace.StartSpan(ctx, "client/Allocation")
 	defer span.End()
 
@@ -233,6 +239,7 @@ func (c *defaultClient) Allocation(ctx context.Context, ci api.Cid) (api.Pin, er
 // the information affects only the current peer, otherwise the information
 // is fetched from all cluster peers.
 func (c *defaultClient) Status(ctx context.Context, ci api.Cid, local bool) (api.GlobalPinInfo, error) {
+	logger.Debugf("default clinet Status")
 	ctx, span := trace.StartSpan(ctx, "client/Status")
 	defer span.End()
 
@@ -252,6 +259,7 @@ func (c *defaultClient) Status(ctx context.Context, ci api.Cid, local bool) (api
 // true, the information affects only the current peer, otherwise the
 // information is fetched from all cluster peers.
 func (c *defaultClient) StatusCids(ctx context.Context, cids []api.Cid, local bool, out chan<- api.GlobalPinInfo) error {
+	logger.Debugf("default clinet StatusCids")
 	return c.statusAllWithCids(ctx, api.TrackerStatusUndefined, cids, local, out)
 }
 
@@ -261,10 +269,12 @@ func (c *defaultClient) StatusCids(ctx context.Context, cids []api.Cid, local bo
 // a bitwise OR operation (st1 | st2 | ...). A "0" filter value (or
 // api.TrackerStatusUndefined), means all.
 func (c *defaultClient) StatusAll(ctx context.Context, filter api.TrackerStatus, local bool, out chan<- api.GlobalPinInfo) error {
+	logger.Debugf("default clinet StatusAll")
 	return c.statusAllWithCids(ctx, filter, nil, local, out)
 }
 
 func (c *defaultClient) statusAllWithCids(ctx context.Context, filter api.TrackerStatus, cids []api.Cid, local bool, out chan<- api.GlobalPinInfo) error {
+	logger.Debugf("default clinet statusAllWithCids")
 	defer close(out)
 	ctx, span := trace.StartSpan(ctx, "client/StatusAll")
 	defer span.End()
@@ -307,6 +317,7 @@ func (c *defaultClient) statusAllWithCids(ctx context.Context, filter api.Tracke
 // If local is true, the operation is limited to the current peer, otherwise
 // it happens on every cluster peer.
 func (c *defaultClient) Recover(ctx context.Context, ci api.Cid, local bool) (api.GlobalPinInfo, error) {
+	logger.Debugf("default clinet Recover")
 	ctx, span := trace.StartSpan(ctx, "client/Recover")
 	defer span.End()
 
@@ -319,6 +330,7 @@ func (c *defaultClient) Recover(ctx context.Context, ci api.Cid, local bool) (ap
 // true, the operation is limited to the current peer. Otherwise, it happens
 // everywhere.
 func (c *defaultClient) RecoverAll(ctx context.Context, local bool, out chan<- api.GlobalPinInfo) error {
+	logger.Debugf("default clinet RecoverAll")
 	defer close(out)
 
 	ctx, span := trace.StartSpan(ctx, "client/RecoverAll")
@@ -346,6 +358,7 @@ func (c *defaultClient) RecoverAll(ctx context.Context, local bool, out chan<- a
 // Alerts returns information health events in the cluster (expired metrics
 // etc.).
 func (c *defaultClient) Alerts(ctx context.Context) ([]api.Alert, error) {
+	logger.Debugf("default clinet Alerts")
 	ctx, span := trace.StartSpan(ctx, "client/Alert")
 	defer span.End()
 
@@ -356,6 +369,7 @@ func (c *defaultClient) Alerts(ctx context.Context) ([]api.Alert, error) {
 
 // Version returns the ipfs-cluster peer's version.
 func (c *defaultClient) Version(ctx context.Context) (api.Version, error) {
+	logger.Debugf("default clinet Version")
 	ctx, span := trace.StartSpan(ctx, "client/Version")
 	defer span.End()
 
@@ -367,6 +381,7 @@ func (c *defaultClient) Version(ctx context.Context) (api.Version, error) {
 // GetConnectGraph returns an ipfs-cluster connection graph.
 // The serialized version, strings instead of pids, is returned
 func (c *defaultClient) GetConnectGraph(ctx context.Context) (api.ConnectGraph, error) {
+	logger.Debugf("default clinet GetConnectGraph")
 	ctx, span := trace.StartSpan(ctx, "client/GetConnectGraph")
 	defer span.End()
 
@@ -378,6 +393,7 @@ func (c *defaultClient) GetConnectGraph(ctx context.Context) (api.ConnectGraph, 
 // Metrics returns a map with the latest valid metrics of the given name
 // for the current cluster peers.
 func (c *defaultClient) Metrics(ctx context.Context, name string) ([]api.Metric, error) {
+	logger.Debugf("default clinet Metrics")
 	ctx, span := trace.StartSpan(ctx, "client/Metrics")
 	defer span.End()
 
@@ -391,6 +407,7 @@ func (c *defaultClient) Metrics(ctx context.Context, name string) ([]api.Metric,
 
 // MetricNames lists names of all metrics.
 func (c *defaultClient) MetricNames(ctx context.Context) ([]string, error) {
+	logger.Debugf("default clinet MetricNames")
 	ctx, span := trace.StartSpan(ctx, "client/MetricNames")
 	defer span.End()
 
@@ -403,6 +420,7 @@ func (c *defaultClient) MetricNames(ctx context.Context) ([]string, error) {
 // returns collected CIDs. If local is true, it would garbage collect
 // only on contacted peer, otherwise on all peers' IPFS daemons.
 func (c *defaultClient) RepoGC(ctx context.Context, local bool) (api.GlobalRepoGC, error) {
+	logger.Debugf("default clinet RepoGC")
 	ctx, span := trace.StartSpan(ctx, "client/RepoGC")
 	defer span.End()
 
@@ -583,7 +601,6 @@ func statusReached(target api.TrackerStatus, gblPinInfo api.GlobalPinInfo, limit
 
 // logic drawn from go-ipfs-cmds/cli/parse.go: appendFile
 func makeSerialFile(fpath string, params api.AddParams) (string, files.Node, error) {
-	fmt.Println(">>> client methods.go makeSerialFile fpath ", fpath, " params ", params)
 	if fpath == "." {
 		cwd, err := os.Getwd()
 		if err != nil {
@@ -626,14 +643,13 @@ func (c *defaultClient) Add(
 	params api.AddParams,
 	out chan<- api.AddedOutput,
 ) error {
-	fmt.Println(">>> client methods.go defaultClient.Add")
+	logger.Debugf("default client Add")
 	ctx, span := trace.StartSpan(ctx, "client/Add")
 	defer span.End()
 
 	addFiles := make([]files.DirEntry, len(paths))
 	for i, p := range paths {
 		u, err := url.Parse(p)
-		fmt.Println(">>> client methods.go defaultClient.Add url.Parse ", u)
 		if err != nil {
 			close(out)
 			return fmt.Errorf("error parsing path: %s", err)
@@ -641,17 +657,13 @@ func (c *defaultClient) Add(
 		var name string
 		var addFile files.Node
 		if strings.HasPrefix(u.Scheme, "http") {
-			fmt.Println(">>> client methods.go defaultClient.Add strings.HasPrefix u.Scheme ", u.Scheme, " == http")
+
 			addFile = files.NewWebFile(u)
 			name = path.Base(u.Path)
-			fmt.Println(">>> client methods.go defaultClient.Add strings.HasPrefix u.Scheme ", u.Scheme,
-				" == http", " path.Base ", name)
 
 		} else {
-			fmt.Println(">>> client methods.go defaultClient.Add strings.HasPrefix u.Scheme ", u.Scheme, " != http")
+
 			if params.NoCopy {
-				fmt.Println(">>> client methods.go defaultClient.Add strings.HasPrefix u.Scheme ", u.Scheme, " != http",
-					" params.NoCopy ", params.NoCopy)
 				close(out)
 				return fmt.Errorf("nocopy option is only valid for URLs")
 			}
@@ -664,7 +676,6 @@ func (c *defaultClient) Add(
 		addFiles[i] = files.FileEntry(name, addFile)
 	}
 
-	fmt.Println(">>> client methods.go defaultClient.Add addFiles ", addFiles)
 	sliceFile := files.NewSliceDirectory(addFiles)
 	// If `form` is set to true, the multipart data will have
 	// a Content-Type of 'multipart/form-data', if `form` is false,
@@ -679,6 +690,7 @@ func (c *defaultClient) AddMultiFile(
 	params api.AddParams,
 	out chan<- api.AddedOutput,
 ) error {
+	logger.Debugf("default client addMultiFile")
 	ctx, span := trace.StartSpan(ctx, "client/AddMultiFile")
 	defer span.End()
 
@@ -693,8 +705,7 @@ func (c *defaultClient) AddMultiFile(
 	if err != nil {
 		return err
 	}
-	fmt.Println(">>> client methods.go defaultClient.AddMultiFile queryStr ", queryStr)
-	fmt.Println(">>> client methods.go defaultClient.AddMultiFile multiFileR ", multiFileR)
+
 	// our handler decodes an AddedOutput and puts it
 	// in the out channel.
 	handler := func(dec *json.Decoder) error {
@@ -721,6 +732,7 @@ func (c *defaultClient) AddMultiFile(
 }
 
 func (c *defaultClient) Health(ctx context.Context) error {
+	logger.Debugf("default client health")
 	ctx, span := trace.StartSpan(ctx, "client/Health")
 	defer span.End()
 	err := c.do(ctx, "GET", "/health", nil, nil, nil)

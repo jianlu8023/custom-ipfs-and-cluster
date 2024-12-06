@@ -20,8 +20,7 @@ import (
 // ResolveNode resolves the path `p` using Unixfs resolver, gets and returns the
 // resolved Node.
 func (api *CoreAPI) ResolveNode(ctx context.Context, p path.Path) (ipld.Node, error) {
-	// TODO ipfs-cluster 调用add时使用这个方法
-	fmt.Println(">>> coreapi path.go CoreAPI.ResolveNode ")
+
 	ctx, span := tracing.Span(ctx, "CoreAPI", "ResolveNode", trace.WithAttributes(attribute.String("path", p.String())))
 	defer span.End()
 
@@ -29,7 +28,7 @@ func (api *CoreAPI) ResolveNode(ctx context.Context, p path.Path) (ipld.Node, er
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(">>> coreapi path.go CoreAPI.ResolvePath rp ", rp)
+
 	node, err := api.dag.Get(ctx, rp.RootCid())
 	if err != nil {
 		return nil, err
@@ -41,7 +40,7 @@ func (api *CoreAPI) ResolveNode(ctx context.Context, p path.Path) (ipld.Node, er
 // ResolvePath resolves the path `p` using Unixfs resolver, returns the
 // resolved path.
 func (api *CoreAPI) ResolvePath(ctx context.Context, p path.Path) (path.ImmutablePath, []string, error) {
-	fmt.Println(">>> coreapi path.go CoreAPI.ResolvePath ")
+
 	ctx, span := tracing.Span(ctx, "CoreAPI", "ResolvePath", trace.WithAttributes(attribute.String("path", p.String())))
 	defer span.End()
 
@@ -53,7 +52,6 @@ func (api *CoreAPI) ResolvePath(ctx context.Context, p path.Path) (path.Immutabl
 	}
 
 	p = res.Path
-	fmt.Println(">>> coreapi path.go CoreAPI.ResolvePath p ", p)
 
 	var resolver ipfspathresolver.Resolver
 	switch p.Namespace() {

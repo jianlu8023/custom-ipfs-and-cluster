@@ -25,7 +25,7 @@ import (
 type RoutingAPI CoreAPI
 
 func (api *RoutingAPI) Get(ctx context.Context, key string) ([]byte, error) {
-	fmt.Println(">>> coreapi routing.go RoutingAPI.Get")
+
 	if !api.nd.IsOnline {
 		return nil, coreiface.ErrOffline
 	}

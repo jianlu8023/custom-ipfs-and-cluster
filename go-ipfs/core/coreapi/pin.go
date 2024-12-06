@@ -21,8 +21,6 @@ import (
 type PinAPI CoreAPI
 
 func (api *PinAPI) Add(ctx context.Context, p path.Path, opts ...caopts.PinAddOption) error {
-	// TODO cluster调用入口
-	fmt.Println(">>> coreapi pin.go PinAPI.Add")
 
 	ctx, span := tracing.Span(ctx, "CoreAPI.PinAPI", "Add", trace.WithAttributes(attribute.String("path", p.String())))
 	defer span.End()

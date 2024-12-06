@@ -215,8 +215,7 @@ func (api *API) parseRequestIDOrFail(w http.ResponseWriter, r *http.Request) (ty
 }
 
 func (api *API) addPin(w http.ResponseWriter, r *http.Request) {
-	logger.Infof(">>> pinsvcapi pinsvcapi.go API.addPin")
-	fmt.Println(">>> pinsvcapi pinsvcapi.go API.addPin")
+	logger.Debugf("addPin from %v", r.Host)
 	if pin := api.parseBodyOrFail(w, r); pin.Defined() {
 		api.config.Logger.Debugf("addPin: %s", pin.Cid)
 		clusterPin, err := svcPinToClusterPin(pin)

@@ -114,7 +114,6 @@ func (lw logWriter) Write(b []byte) (int, error) {
 
 // NewAPI creates a new common API component with the given configuration.
 func NewAPI(ctx context.Context, cfg *Config, routes func(*rpc.Client) []Route) (*API, error) {
-	fmt.Println(">>> common api.go NewAPI")
 	return NewAPIWithHost(ctx, cfg, nil, routes)
 }
 
@@ -210,7 +209,7 @@ func NewAPIWithHost(ctx context.Context, cfg *Config, h host.Host, routes func(*
 }
 
 func (api *API) setupHTTP() error {
-	fmt.Println(">>> common api.go API.setupHTTP")
+
 	if len(api.config.HTTPListenAddr) == 0 {
 		return nil
 	}
@@ -236,7 +235,7 @@ func (api *API) setupHTTP() error {
 }
 
 func (api *API) setupLibp2p() error {
-	fmt.Println(">>> common api.go API.setupLibp2p")
+
 	// Make new host. Override any provided existing one
 	// if we have config for a custom one.
 	if len(api.config.Libp2pListenAddr) > 0 {
@@ -268,8 +267,6 @@ func (api *API) setupLibp2p() error {
 }
 
 func (api *API) addRoutes() {
-	fmt.Println(">>> common api.go API.addRoutes")
-	fmt.Println(">>> common api.go api.router: ", api.routes(api.rpcClient))
 	for _, route := range api.routes(api.rpcClient) {
 		api.router.
 			Methods(route.Method).

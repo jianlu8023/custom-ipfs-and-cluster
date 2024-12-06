@@ -84,7 +84,7 @@ type CoreAPI struct {
 
 // NewCoreAPI creates new instance of IPFS CoreAPI backed by go-ipfs Node.
 func NewCoreAPI(n *core.IpfsNode, opts ...options.ApiOption) (coreiface.CoreAPI, error) {
-	fmt.Println(">>> coreapi coreapi.go NewCoreAPI")
+
 	parentOpts, err := options.ApiOptions()
 	if err != nil {
 		return nil, err

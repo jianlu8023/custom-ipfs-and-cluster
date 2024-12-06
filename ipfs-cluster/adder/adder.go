@@ -92,8 +92,6 @@ type Adder struct {
 //
 // An Adder may only be used once.
 func New(ds ClusterDAGService, p api.AddParams, out chan api.AddedOutput) *Adder {
-	logger.Infof(">>> adder adder.go New")
-	fmt.Println(">>> adder adder.go New")
 	// Discard all progress update output as the caller has not provided
 	// a channel for them to listen on.
 	if out == nil {
@@ -122,8 +120,6 @@ func (a *Adder) setContext(ctx context.Context) {
 // FromMultipart adds content from a multipart.Reader. The adder will
 // no longer be usable after calling this method.
 func (a *Adder) FromMultipart(ctx context.Context, r *multipart.Reader) (api.Cid, error) {
-	logger.Infof(">>> adder adder.go Adder.FromMultipart")
-	fmt.Println(">>> adder adder.go Adder.FromMultipart")
 	logger.Debugf("adding from multipart with params: %+v", a.params)
 
 	f, err := files.NewFileFromPartReader(r, "multipart/form-data")
@@ -138,6 +134,7 @@ func (a *Adder) FromMultipart(ctx context.Context, r *multipart.Reader) (api.Cid
 // be usable after calling this method.
 func (a *Adder) FromFiles(ctx context.Context, f files.Directory) (api.Cid, error) {
 	logger.Debug("adding from files")
+
 	a.setContext(ctx)
 
 	if a.ctx.Err() != nil { // don't allow running twice
@@ -177,7 +174,6 @@ func (a *Adder) FromFiles(ctx context.Context, f files.Directory) (api.Cid, erro
 			return api.CidUndef, a.ctx.Err()
 		default:
 			logger.Debugf("ipfsAdder AddFile(%s)", it.Name())
-
 			adderRoot, err = dagFmtr.Add(it.Name(), it.Node())
 			if err != nil {
 				logger.Error("error adding to cluster: ", err)
@@ -190,6 +186,7 @@ func (a *Adder) FromFiles(ctx context.Context, f files.Directory) (api.Cid, erro
 			break
 		}
 	}
+
 	if it.Err() != nil {
 		return api.CidUndef, it.Err()
 	}
@@ -209,6 +206,7 @@ type ipfsAdder struct {
 }
 
 func newIpfsAdder(ctx context.Context, dgs ClusterDAGService, params api.AddParams, out chan api.AddedOutput) (*ipfsAdder, error) {
+	logger.Debug("creating new ipfsAdder")
 	iadder, err := ipfsadd.NewAdder(ctx, dgs, dgs.Allocations)
 	if err != nil {
 		logger.Error(err)
@@ -241,6 +239,7 @@ func newIpfsAdder(ctx context.Context, dgs ClusterDAGService, params api.AddPara
 }
 
 func (ia *ipfsAdder) Add(name string, f files.Node) (api.Cid, error) {
+	logger.Debugf("starting add ipfs file Name %v", name)
 	// In order to set the AddedOutput names right, we use
 	// OutputPrefix:
 	//
@@ -288,8 +287,7 @@ func newCarAdder(ctx context.Context, dgs ClusterDAGService, params api.AddParam
 // Add takes a node which should be a CAR file and nothing else and
 // adds its blocks using the ClusterDAGService.
 func (ca *carAdder) Add(name string, fn files.Node) (api.Cid, error) {
-	logger.Infof(">>> adder adder.go carAdder.Add")
-	fmt.Println(">>> adder adder.go carAdder.Add")
+	logger.Debugf("starting add car file Name %v", name)
 	if ca.params.Wrap {
 		return api.CidUndef, errors.New("cannot wrap a CAR file upload")
 	}

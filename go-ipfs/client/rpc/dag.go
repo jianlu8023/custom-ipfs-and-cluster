@@ -21,7 +21,7 @@ type (
 )
 
 func (api *HttpDagServ) Get(ctx context.Context, c cid.Cid) (format.Node, error) {
-	fmt.Println(">>> rpc dag.go HttpDagServ Get")
+
 	r, err := api.core().Block().Get(ctx, path.FromCid(c))
 	if err != nil {
 		return nil, err
@@ -101,12 +101,11 @@ func (api *HttpDagServ) AddMany(ctx context.Context, nds []format.Node) error {
 }
 
 func (api *HttpDagServ) Add(ctx context.Context, nd format.Node) error {
-	fmt.Println(">>> rpc dag.go HttpDagServ Add")
+
 	return (*httpNodeAdder)(api).add(ctx, nd, false)
 }
 
 func (api *pinningHttpNodeAdder) Add(ctx context.Context, nd format.Node) error {
-	fmt.Println(">>> rpc dag.go pinningHttpNodeAdder Add")
 	return (*httpNodeAdder)(api).add(ctx, nd, true)
 }
 

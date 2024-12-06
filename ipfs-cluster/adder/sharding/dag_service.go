@@ -52,8 +52,6 @@ type DAGService struct {
 // New returns a new ClusterDAGService, which uses the given rpc client to perform
 // Allocate, IPFSStream and Pin requests to other cluster components.
 func New(ctx context.Context, rpc *rpc.Client, opts api.AddParams, out chan<- api.AddedOutput) *DAGService {
-	logger.Infof(">>> sharding dag_service.go New")
-	fmt.Println(">>> sharding dag_service.go New")
 	// use a default value for this regardless of what is provided.
 	opts.Mode = api.PinModeRecursive
 	return &DAGService{
@@ -70,8 +68,6 @@ func New(ctx context.Context, rpc *rpc.Client, opts api.AddParams, out chan<- ap
 // Add puts the given node in its corresponding shard and sends it to the
 // destination peers.
 func (dgs *DAGService) Add(ctx context.Context, node ipld.Node) error {
-	logger.Infof(">>> sharding dag_service.go DAGService.Add")
-	fmt.Println(">>> sharding dag_service.go DAGService.Add")
 	// FIXME: This will grow in memory
 	if !dgs.addedSet.Visit(node.Cid()) {
 		return nil
@@ -192,8 +188,6 @@ func (dgs *DAGService) Finalize(ctx context.Context, dataRoot api.Cid) (api.Cid,
 
 // Allocations returns the current allocations for the current shard.
 func (dgs *DAGService) Allocations() []peer.ID {
-	logger.Infof(">>> sharding dag_service.go DAGService.Allocations")
-	fmt.Println(">>> sharding dag_service.go DAGService.Allocations")
 	// FIXME: this is probably not safe in concurrency?  However, there is
 	// no concurrent execution of any code in the DAGService I think.
 	if dgs.currentShard != nil {

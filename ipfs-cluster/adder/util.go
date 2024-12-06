@@ -3,7 +3,6 @@ package adder
 import (
 	"context"
 	"errors"
-	"fmt"
 	"sync"
 
 	"github.com/ipfs-cluster/ipfs-cluster/api"
@@ -133,8 +132,6 @@ func BlockAllocate(ctx context.Context, rpc *rpc.Client, pinOpts api.PinOptions)
 
 // Pin helps sending local RPC pin requests.
 func Pin(ctx context.Context, rpc *rpc.Client, pin api.Pin) error {
-	logger.Infof(">>> adder util.go Pin")
-	fmt.Println(">>> adder util.go Pin")
 	if pin.ReplicationFactorMin < 0 {
 		pin.Allocations = []peer.ID{}
 	}

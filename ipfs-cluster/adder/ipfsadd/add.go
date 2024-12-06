@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 
 	"github.com/ipfs-cluster/ipfs-cluster/api"
+	"github.com/ipfs-cluster/ipfs-cluster/internal/crypto/sm4"
 
 	chunker "github.com/ipfs/boxo/chunker"
 	files "github.com/ipfs/boxo/files"
@@ -35,8 +36,7 @@ var liveCacheSize = uint64(256 << 10)
 
 // NewAdder Returns a new Adder used for a file add operation.
 func NewAdder(ctx context.Context, ds ipld.DAGService, allocs func() []peer.ID) (*Adder, error) {
-	log.Infof(">>> ipfsadd add.go NewAdder")
-	fmt.Println(">>> ipfsadd add.go NewAdder")
+
 	// Cluster: we don't use pinner nor GCLocker.
 	return &Adder{
 		ctx:        ctx,
@@ -93,9 +93,14 @@ func (adder *Adder) SetMfsRoot(r *mfs.Root) {
 
 // Constructs a node from reader's data, and adds it. Doesn't pin.
 func (adder *Adder) add(reader io.Reader) (ipld.Node, error) {
-	fmt.Println(">>> ipfsadd add.go Adder.add")
-	log.Infof(">>> ipfsadd add.go Adder.add")
-	chnk, err := chunker.FromString(reader, adder.Chunker)
+
+	// TODO ADD加密核心
+	encrypt, err := sm4.Encrypt(reader)
+	if err != nil {
+		return nil, err
+	}
+
+	chnk, err := chunker.FromString(encrypt, adder.Chunker)
 	if err != nil {
 		return nil, err
 	}
@@ -157,8 +162,6 @@ func (adder *Adder) add(reader io.Reader) (ipld.Node, error) {
 // writes the pin state to the backing datastore.
 // Cluster: we don't pin. Former Finalize().
 func (adder *Adder) PinRoot(root ipld.Node) error {
-	fmt.Println(">>> ipfsadd add.go Adder.PinRoot")
-	log.Infof(">>> ipfsadd add.go Adder.PinRoot")
 	rnk := root.Cid()
 
 	err := adder.dagService.Add(adder.ctx, root)
@@ -216,6 +219,7 @@ func (adder *Adder) outputDirs(path string, fsn mfs.FSNode) error {
 }
 
 func (adder *Adder) addNode(node ipld.Node, path string) error {
+
 	// patch it into the root
 	outputName := path
 	if path == "" {
@@ -265,8 +269,7 @@ func (adder *Adder) addNode(node ipld.Node, path string) error {
 // AddAllAndPin adds the given request's files and pin them.
 // Cluster: we don'pin. Former AddFiles.
 func (adder *Adder) AddAllAndPin(file files.Node) (ipld.Node, error) {
-	log.Infof(">>> ipfsadd add.go Adder.AddAllAndPin ")
-	fmt.Println(">>> ipfsadd add.go Adder.AddAllAndPin ")
+
 	if err := adder.addFileNode("", file, true); err != nil {
 		return nil, err
 	}
@@ -336,6 +339,7 @@ func (adder *Adder) AddAllAndPin(file files.Node) (ipld.Node, error) {
 
 // Cluster: we don't Pause for GC
 func (adder *Adder) addFileNode(path string, file files.Node, toplevel bool) error {
+
 	defer file.Close()
 
 	if adder.liveNodes >= liveCacheSize {
@@ -381,8 +385,7 @@ func (adder *Adder) addSymlink(path string, l *files.Symlink) error {
 }
 
 func (adder *Adder) addFile(path string, file files.File) error {
-	fmt.Println(">>> ipfsadd add.go Adder.addFile")
-	log.Infof(">>> ipfsadd add.go Adder.addFile")
+
 	// if the progress flag was specified, wrap the file so that we can send
 	// progress updates to the client (over the output channel)
 	var reader io.Reader = file

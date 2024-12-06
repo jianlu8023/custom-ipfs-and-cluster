@@ -3,7 +3,6 @@ package rpc
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io"
 	"strings"
 
@@ -48,7 +47,7 @@ func (p pin) Type() string {
 }
 
 func (api *PinAPI) Add(ctx context.Context, p path.Path, opts ...caopts.PinAddOption) error {
-	fmt.Println(">>> rpc pin.go PinAPI.Add")
+
 	options, err := caopts.PinAddOptions(opts...)
 	if err != nil {
 		return err

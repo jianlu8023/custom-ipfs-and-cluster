@@ -131,7 +131,7 @@ func (api *NameAPI) Search(ctx context.Context, name string, opts ...caopts.Name
 // Resolve attempts to resolve the newest version of the specified name and
 // returns its path.
 func (api *NameAPI) Resolve(ctx context.Context, name string, opts ...caopts.NameResolveOption) (path.Path, error) {
-	fmt.Println(">>> coreapi name.go NameAPI Resolve")
+
 	ctx, span := tracing.Span(ctx, "CoreAPI.NameAPI", "Resolve", trace.WithAttributes(attribute.String("name", name)))
 	defer span.End()
 

@@ -2,7 +2,6 @@ package rpc
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ipfs/boxo/path"
 	cid "github.com/ipfs/go-cid"
@@ -10,7 +9,7 @@ import (
 )
 
 func (api *HttpApi) ResolvePath(ctx context.Context, p path.Path) (path.ImmutablePath, []string, error) {
-	fmt.Println(">>> rpc path.go HttpAPI.ResolvePath")
+
 	var out struct {
 		Cid     cid.Cid
 		RemPath string
@@ -41,7 +40,7 @@ func (api *HttpApi) ResolvePath(ctx context.Context, p path.Path) (path.Immutabl
 }
 
 func (api *HttpApi) ResolveNode(ctx context.Context, p path.Path) (ipld.Node, error) {
-	fmt.Println(">>> rpc path.go HttpAPI.ResolveNode")
+
 	rp, _, err := api.ResolvePath(ctx, p)
 	if err != nil {
 		return nil, err

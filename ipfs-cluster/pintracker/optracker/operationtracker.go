@@ -76,7 +76,6 @@ func NewOperationTracker(ctx context.Context, pid peer.ID, peerName string) *Ope
 // If an operation exists it is of different type, it is
 // canceled and the new one replaces it in the tracker.
 func (opt *OperationTracker) TrackNewOperation(ctx context.Context, pin api.Pin, typ OperationType, ph Phase) *Operation {
-	logger.Infof(">>> optracker operationtracker.go OperationTracker.TrackNewOperation")
 	_, span := trace.StartSpan(ctx, "optracker/TrackNewOperation")
 	defer span.End()
 

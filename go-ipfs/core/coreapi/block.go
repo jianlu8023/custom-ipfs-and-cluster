@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"fmt"
 	"io"
 
 	"github.com/ipfs/boxo/path"
@@ -28,7 +27,7 @@ type BlockStat struct {
 }
 
 func (api *BlockAPI) Put(ctx context.Context, src io.Reader, opts ...caopts.BlockPutOption) (coreiface.BlockStat, error) {
-	fmt.Println(">>> coreapi block.go BlockAPI.Put")
+
 	ctx, span := tracing.Span(ctx, "CoreAPI.BlockAPI", "Put")
 	defer span.End()
 
@@ -46,7 +45,7 @@ func (api *BlockAPI) Put(ctx context.Context, src io.Reader, opts ...caopts.Bloc
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(">>> coreapi block.go BlockAPI.Put bcid ", bcid)
+
 	b, err := blocks.NewBlockWithCid(data, bcid)
 	if err != nil {
 		return nil, err
@@ -74,7 +73,7 @@ func (api *BlockAPI) Put(ctx context.Context, src io.Reader, opts ...caopts.Bloc
 }
 
 func (api *BlockAPI) Get(ctx context.Context, p path.Path) (io.Reader, error) {
-	fmt.Println(">>> coreapi block.go BlockAPI Get")
+
 	ctx, span := tracing.Span(ctx, "CoreAPI.BlockAPI", "Get", trace.WithAttributes(attribute.String("path", p.String())))
 	defer span.End()
 	rp, _, err := api.core().ResolvePath(ctx, p)

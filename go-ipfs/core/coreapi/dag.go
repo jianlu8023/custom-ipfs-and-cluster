@@ -2,7 +2,6 @@ package coreapi
 
 import (
 	"context"
-	"fmt"
 
 	dag "github.com/ipfs/boxo/ipld/merkledag"
 	pin "github.com/ipfs/boxo/pinning/pinner"
@@ -23,7 +22,7 @@ type dagAPI struct {
 type pinningAdder CoreAPI
 
 func (adder *pinningAdder) Add(ctx context.Context, nd ipld.Node) error {
-	fmt.Println(">>> coreapi dag.go pinningAdder Add")
+
 	ctx, span := tracing.Span(ctx, "CoreAPI.PinningAdder", "Add", trace.WithAttributes(attribute.String("node", nd.String())))
 	defer span.End()
 	defer adder.blockstore.PinLock(ctx).Unlock(ctx)

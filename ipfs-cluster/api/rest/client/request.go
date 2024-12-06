@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -39,10 +38,6 @@ func (c *defaultClient) doStream(
 	body io.Reader,
 	outHandler responseDecoder,
 ) error {
-	fmt.Println(">>> client request.go defaultClient.doStream method ", method,
-		" path ", path,
-		" headers ", headers,
-		" body ", body)
 	resp, err := c.doRequest(ctx, method, path, headers, body)
 	if err != nil {
 		return api.Error{Code: 0, Message: err.Error()}
@@ -56,7 +51,6 @@ func (c *defaultClient) doRequest(
 	headers map[string]string,
 	body io.Reader,
 ) (*http.Response, error) {
-	fmt.Println(">>> client request.go defaultClient.doRequest ")
 	span := trace.FromContext(ctx)
 	span.AddAttributes(
 		trace.StringAttribute("method", method),
@@ -66,7 +60,6 @@ func (c *defaultClient) doRequest(
 
 	urlpath := c.net + "://" + c.hostname + "/" + strings.TrimPrefix(path, "/")
 	logger.Debugf("%s: %s", method, urlpath)
-	fmt.Println(">>> client request.go defaultClient.doRequest urlpath ", urlpath)
 
 	r, err := http.NewRequestWithContext(ctx, method, urlpath, body)
 	if err != nil {

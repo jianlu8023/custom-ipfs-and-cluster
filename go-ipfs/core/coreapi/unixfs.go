@@ -33,7 +33,7 @@ type UnixfsAPI CoreAPI
 // Add builds a merkledag node from a reader, adds it to the blockstore,
 // and returns the key representing that node.
 func (api *UnixfsAPI) Add(ctx context.Context, files files.Node, opts ...options.UnixfsAddOption) (path.ImmutablePath, error) {
-	fmt.Println(">>> coreapi unixfs.go UnixfsAPI.Add")
+
 	ctx, span := tracing.Span(ctx, "CoreAPI.UnixfsAPI", "Add")
 	defer span.End()
 

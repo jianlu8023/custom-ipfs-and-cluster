@@ -399,7 +399,7 @@ func pinArgs(maxDepth api.PinDepth) string {
 // Pin performs a pin request against the configured IPFS
 // daemon.
 func (ipfs *Connector) Pin(ctx context.Context, pin api.Pin) error {
-	logger.Infof(">>> ipfshttp ipfshttp.go Connector.Pin")
+
 	ctx, span := trace.StartSpan(ctx, "ipfsconn/ipfshttp/Pin")
 	defer span.End()
 
@@ -665,7 +665,7 @@ nextFilter:
 // "type=direct" (or other) depending on the given pin's MaxDepth setting.
 // It returns an api.IPFSPinStatus for that hash.
 func (ipfs *Connector) PinLsCid(ctx context.Context, pin api.Pin) (api.IPFSPinStatus, error) {
-	logger.Infof(">>> ipfshttp ipfshttp.go Connector.PinLsCid")
+
 	ctx, span := trace.StartSpan(ctx, "ipfsconn/ipfshttp/PinLsCid")
 	defer span.End()
 

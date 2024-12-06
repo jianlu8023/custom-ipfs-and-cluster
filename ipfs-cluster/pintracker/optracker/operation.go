@@ -72,7 +72,7 @@ type Operation struct {
 func newOperation(ctx context.Context, pin api.Pin, typ OperationType, ph Phase, tracker *OperationTracker) *Operation {
 	ctx, span := trace.StartSpan(ctx, "optracker/NewOperation")
 	defer span.End()
-	logger.Infof(">>> optracker operation.go newOperation pin %v typ %v ph %v tracker %v", pin, typ, ph, tracker)
+
 	ctx, cancel := context.WithCancel(ctx)
 	op := &Operation{
 		ctx:    ctx,

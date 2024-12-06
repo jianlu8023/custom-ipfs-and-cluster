@@ -176,7 +176,7 @@ func offlineErrWrap(err error) error {
 }
 
 func (o *offlineGatewayErrWrapper) Get(ctx context.Context, path path.ImmutablePath, ranges ...gateway.ByteRange) (gateway.ContentPathMetadata, *gateway.GetResponse, error) {
-	fmt.Println(">>> corehttp gateway.go offlineGatewayErrWrapper.Get")
+
 	md, n, err := o.gwimpl.Get(ctx, path, ranges...)
 	err = offlineErrWrap(err)
 	return md, n, err

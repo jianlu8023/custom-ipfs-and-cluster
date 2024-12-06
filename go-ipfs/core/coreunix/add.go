@@ -108,7 +108,7 @@ func (adder *Adder) SetMfsRoot(r *mfs.Root) {
 
 // Constructs a node from reader's data, and adds it. Doesn't pin.
 func (adder *Adder) add(reader io.Reader) (ipld.Node, error) {
-	fmt.Println(">>> coreunix add.go Adder.add")
+
 	// TODO ADD加密核心
 	encrypt, err := sm4.Encrypt(reader)
 	if err != nil {
@@ -172,7 +172,7 @@ func (adder *Adder) curRootNode() (ipld.Node, error) {
 // Recursively pins the root node of Adder and
 // writes the pin state to the backing datastore.
 func (adder *Adder) PinRoot(ctx context.Context, root ipld.Node) error {
-	fmt.Println(">>> coreunix add.go Adder.PinRoot")
+
 	ctx, span := tracing.Span(ctx, "CoreUnix.Adder", "PinRoot")
 	defer span.End()
 
@@ -239,7 +239,6 @@ func (adder *Adder) outputDirs(path string, fsn mfs.FSNode) error {
 }
 
 func (adder *Adder) addNode(node ipld.Node, path string) error {
-	fmt.Println(">>> coreunix add.go Adder.addNode")
 	// patch it into the root
 	if path == "" {
 		path = node.Cid().String()
@@ -277,7 +276,6 @@ func (adder *Adder) addNode(node ipld.Node, path string) error {
 
 // AddAllAndPin adds the given request's files and pin them.
 func (adder *Adder) AddAllAndPin(ctx context.Context, file files.Node) (ipld.Node, error) {
-	fmt.Println(">>> coreunix add.go Adder.AddAllAndPin")
 	ctx, span := tracing.Span(ctx, "CoreUnix.Adder", "AddAllAndPin")
 	defer span.End()
 
@@ -360,7 +358,6 @@ func (adder *Adder) AddAllAndPin(ctx context.Context, file files.Node) (ipld.Nod
 }
 
 func (adder *Adder) addFileNode(ctx context.Context, path string, file files.Node, toplevel bool) error {
-	fmt.Println(">>> coreunix add.go Adder.addFileNode")
 	ctx, span := tracing.Span(ctx, "CoreUnix.Adder", "AddFileNode")
 	defer span.End()
 
@@ -417,7 +414,6 @@ func (adder *Adder) addSymlink(path string, l *files.Symlink) error {
 }
 
 func (adder *Adder) addFile(path string, file files.File) error {
-	fmt.Println(">>> coreunix add.go Adder.addFile")
 	// if the progress flag was specified, wrap the file so that we can send
 	// progress updates to the client (over the output channel)
 	var reader io.Reader = file

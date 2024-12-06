@@ -1,8 +1,6 @@
 package coreunix
 
 import (
-	"fmt"
-
 	dag "github.com/ipfs/boxo/ipld/merkledag"
 	ft "github.com/ipfs/boxo/ipld/unixfs"
 	cid "github.com/ipfs/go-cid"
@@ -10,7 +8,7 @@ import (
 )
 
 func AddMetadataTo(n *core.IpfsNode, skey string, m *ft.Metadata) (string, error) {
-	fmt.Println(">>> coreunix metadata.go AddMetadataTo")
+
 	c, err := cid.Decode(skey)
 	if err != nil {
 		return "", err

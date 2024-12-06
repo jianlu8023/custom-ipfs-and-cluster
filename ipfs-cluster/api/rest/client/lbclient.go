@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"fmt"
 	"sync/atomic"
 
 	"github.com/ipfs-cluster/ipfs-cluster/api"
@@ -113,8 +112,6 @@ func (lc *loadBalancingClient) retry(count int, call func(Client) error) error {
 
 // ID returns information about the cluster Peer.
 func (lc *loadBalancingClient) ID(ctx context.Context) (api.ID, error) {
-	fmt.Println(">>> client lbclient.go loadBalancingClient.ID")
-	logger.Infof(">>> client lbclient.go loadBalancingClient.ID")
 	var id api.ID
 	call := func(c Client) error {
 		var err error
@@ -128,8 +125,6 @@ func (lc *loadBalancingClient) ID(ctx context.Context) (api.ID, error) {
 
 // Peers requests ID information for all cluster peers.
 func (lc *loadBalancingClient) Peers(ctx context.Context, out chan<- api.ID) error {
-	fmt.Println(">>> client lbclient.go loadBalancingClient.Peers")
-	logger.Infof(">>> client lbclient.go loadBalancingClient.Peers")
 	call := func(c Client) error {
 		done := make(chan struct{})
 		cout := make(chan api.ID, cap(out))
@@ -159,8 +154,6 @@ func (lc *loadBalancingClient) Peers(ctx context.Context, out chan<- api.ID) err
 // PeerAdd adds a new peer to the cluster.
 func (lc *loadBalancingClient) PeerAdd(ctx context.Context, pid peer.ID) (api.ID, error) {
 
-	fmt.Println(">>> client lbclient.go loadBalancingClient.PeerAdd")
-	logger.Infof(">>> client lbclient.go loadBalancingClient.PeerAdd")
 	var id api.ID
 	call := func(c Client) error {
 		var err error
@@ -174,8 +167,7 @@ func (lc *loadBalancingClient) PeerAdd(ctx context.Context, pid peer.ID) (api.ID
 
 // PeerRm removes a current peer from the cluster.
 func (lc *loadBalancingClient) PeerRm(ctx context.Context, id peer.ID) error {
-	fmt.Println(">>> client lbclient.go loadBalancingClient.PeerRm")
-	logger.Infof(">>> client lbclient.go loadBalancingClient.PeerRm")
+
 	call := func(c Client) error {
 		return c.PeerRm(ctx, id)
 	}
@@ -186,8 +178,7 @@ func (lc *loadBalancingClient) PeerRm(ctx context.Context, id peer.ID) error {
 // Pin tracks a Cid with the given replication factor and a name for
 // human-friendliness.
 func (lc *loadBalancingClient) Pin(ctx context.Context, ci api.Cid, opts api.PinOptions) (api.Pin, error) {
-	fmt.Println(">>> client lbclient.go loadBalancingClient.Pin")
-	logger.Infof(">>> client lbclient.go loadBalancingClient.Pin")
+
 	var pin api.Pin
 	call := func(c Client) error {
 		var err error
@@ -201,8 +192,7 @@ func (lc *loadBalancingClient) Pin(ctx context.Context, ci api.Cid, opts api.Pin
 
 // Unpin untracks a Cid from cluster.
 func (lc *loadBalancingClient) Unpin(ctx context.Context, ci api.Cid) (api.Pin, error) {
-	fmt.Println(">>> client lbclient.go loadBalancingClient.Unpin")
-	logger.Infof(">>> client lbclient.go loadBalancingClient.Unpin")
+
 	var pin api.Pin
 	call := func(c Client) error {
 		var err error
@@ -497,8 +487,7 @@ func (lc *loadBalancingClient) Add(
 	params api.AddParams,
 	out chan<- api.AddedOutput,
 ) error {
-	fmt.Println(">>> client lbclient.go loadBalancingClient.Add")
-	logger.Infof(">>> client lbclient.go loadBalancingClient.Add")
+
 	call := func(c Client) error {
 		done := make(chan struct{})
 		cout := make(chan api.AddedOutput, cap(out))
@@ -531,8 +520,7 @@ func (lc *loadBalancingClient) AddMultiFile(
 	params api.AddParams,
 	out chan<- api.AddedOutput,
 ) error {
-	fmt.Println(">>> client lbclient.go loadBalancingClient.AddMultiFile")
-	logger.Infof(">>> client lbclient.go loadBalancingClient.AddMultiFile")
+
 	call := func(c Client) error {
 		done := make(chan struct{})
 		cout := make(chan api.AddedOutput, cap(out))
@@ -563,8 +551,7 @@ func (lc *loadBalancingClient) AddMultiFile(
 // It re-uses this Client's HTTP client, thus will be constrained by
 // the same configurations affecting it (timeouts...).
 func (lc *loadBalancingClient) IPFS(ctx context.Context) *shell.Shell {
-	fmt.Println(">>> client lbclient.go loadBalancingClient.IPFS")
-	logger.Infof(">>> client lbclient.go loadBalancingClient.IPFS")
+
 	var s *shell.Shell
 	call := func(c Client) error {
 		s = c.IPFS(ctx)
