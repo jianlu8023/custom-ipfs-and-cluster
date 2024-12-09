@@ -168,7 +168,7 @@
     "tracing": {
       "enable_tracing": true,
       "jaeger_agent_endpoint": "/ip4/0.0.0.0/udp/6831",
-      "sampling_prob": 1.0,
+      "sampling_prob": 0.3,
       "service_name": "cluster-daemon"
     }
   },
