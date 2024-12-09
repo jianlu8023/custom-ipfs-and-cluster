@@ -13,7 +13,7 @@ import (
 func (c *Cluster) ConnectGraph() (api.ConnectGraph, error) {
 	ctx, span := trace.StartSpan(c.ctx, "cluster/ConnectGraph")
 	defer span.End()
-
+	logger.Debug("starting Cluster/ConnectGraph")
 	cg := api.ConnectGraph{
 		ClusterID:         c.host.ID(),
 		IDtoPeername:      make(map[string]string),

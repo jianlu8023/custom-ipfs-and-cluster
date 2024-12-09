@@ -282,7 +282,7 @@ func (spt *Tracker) Track(ctx context.Context, c api.Pin) error {
 
 	ctx, span := trace.StartSpan(ctx, "tracker/stateless/Track")
 	defer span.End()
-
+	logger.Debugf("starting Tracker/Track for %v", c.String())
 	logger.Debugf("tracking %s", c.Cid)
 
 	// Sharded pins are never pinned. A sharded pin cannot turn into
@@ -320,7 +320,7 @@ func (spt *Tracker) Track(ctx context.Context, c api.Pin) error {
 func (spt *Tracker) Untrack(ctx context.Context, c api.Cid) error {
 	ctx, span := trace.StartSpan(ctx, "tracker/stateless/Untrack")
 	defer span.End()
-
+	logger.Debugf("starting Tracker/Untrack for %v", c.String())
 	logger.Debugf("untracking %s", c)
 	return spt.enqueue(ctx, api.PinCid(c), optracker.OperationUnpin)
 }
@@ -329,7 +329,7 @@ func (spt *Tracker) Untrack(ctx context.Context, c api.Cid) error {
 func (spt *Tracker) StatusAll(ctx context.Context, filter api.TrackerStatus, out chan<- api.PinInfo) error {
 	ctx, span := trace.StartSpan(ctx, "tracker/stateless/StatusAll")
 	defer span.End()
-
+	logger.Debugf("starting Tracker/StatusAll for %v", filter)
 	ipfsid := spt.getIPFSID(ctx)
 
 	// Any other states are just operation-tracker states, so we just give
@@ -467,7 +467,7 @@ func (spt *Tracker) StatusAll(ctx context.Context, filter api.TrackerStatus, out
 func (spt *Tracker) Status(ctx context.Context, c api.Cid) api.PinInfo {
 	ctx, span := trace.StartSpan(ctx, "tracker/stateless/Status")
 	defer span.End()
-
+	logger.Debugf("starting Tracker/Status for %s", c.String())
 	ipfsid := spt.getIPFSID(ctx)
 
 	// check if c has an inflight operation or errorred operation in optracker
@@ -565,7 +565,7 @@ func (spt *Tracker) RecoverAll(ctx context.Context, out chan<- api.PinInfo) erro
 
 	ctx, span := trace.StartSpan(ctx, "tracker/stateless/RecoverAll")
 	defer span.End()
-
+	logger.Debugf("starting Tracker/RecoverAll")
 	statusesCh := make(chan api.PinInfo, 1024)
 	go func() {
 		err := spt.StatusAll(ctx, api.TrackerStatusUndefined, statusesCh)
@@ -608,7 +608,7 @@ func (spt *Tracker) RecoverAll(ctx context.Context, out chan<- api.PinInfo) erro
 func (spt *Tracker) Recover(ctx context.Context, c api.Cid) (api.PinInfo, error) {
 	ctx, span := trace.StartSpan(ctx, "tracker/stateless/Recover")
 	defer span.End()
-
+	logger.Debugf("starting Tracker/Recover for %s", c.String())
 	pi := spt.Status(ctx, c)
 
 	recPi, err := spt.recoverWithPinInfo(ctx, pi)
@@ -681,6 +681,7 @@ func (spt *Tracker) ipfsPins(ctx context.Context) (<-chan api.IPFSPinInfo, <-cha
 
 // PinQueueSize returns the current size of the pinning queue.
 func (spt *Tracker) PinQueueSize(ctx context.Context) (int64, error) {
+	logger.Debugf("starting Tracker/PinQueueSize")
 	return spt.optracker.PinQueueSize(), nil
 }
 

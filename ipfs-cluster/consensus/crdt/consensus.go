@@ -390,7 +390,7 @@ func (css *Consensus) Ready(ctx context.Context) <-chan struct{} {
 func (css *Consensus) IsTrustedPeer(ctx context.Context, pid peer.ID) bool {
 	_, span := trace.StartSpan(ctx, "consensus/IsTrustedPeer")
 	defer span.End()
-
+	logger.Debugf("starting Consensus/IsTrustedPeer for %v", pid.String())
 	if css.config.TrustAll {
 		return true
 	}
@@ -410,7 +410,7 @@ func (css *Consensus) IsTrustedPeer(ctx context.Context, pid peer.ID) bool {
 func (css *Consensus) Trust(ctx context.Context, pid peer.ID) error {
 	_, span := trace.StartSpan(ctx, "consensus/Trust")
 	defer span.End()
-
+	logger.Debugf("starting Consensus/Trust for %v", pid.String())
 	css.trustedPeers.Store(pid, struct{}{})
 	if conman := css.host.ConnManager(); conman != nil {
 		conman.Protect(pid, connMgrTag)
@@ -425,7 +425,7 @@ func (css *Consensus) Trust(ctx context.Context, pid peer.ID) error {
 func (css *Consensus) Distrust(ctx context.Context, pid peer.ID) error {
 	_, span := trace.StartSpan(ctx, "consensus/Distrust")
 	defer span.End()
-
+	logger.Debugf("starting Consensus/Distrust for %v", pid.String())
 	css.trustedPeers.Delete(pid)
 	return nil
 }
@@ -434,7 +434,7 @@ func (css *Consensus) Distrust(ctx context.Context, pid peer.ID) error {
 func (css *Consensus) LogPin(ctx context.Context, pin api.Pin) error {
 	ctx, span := trace.StartSpan(ctx, "consensus/LogPin")
 	defer span.End()
-
+	logger.Debugf("starting Consensus/LogPin for %v", pin.String())
 	if css.config.batchingEnabled() {
 		batched := make(chan error)
 		css.sendToBatchCh <- batchItem{
@@ -453,7 +453,7 @@ func (css *Consensus) LogPin(ctx context.Context, pin api.Pin) error {
 func (css *Consensus) LogUnpin(ctx context.Context, pin api.Pin) error {
 	ctx, span := trace.StartSpan(ctx, "consensus/LogUnpin")
 	defer span.End()
-
+	logger.Debugf("starting Consensus/LogUnpin for %v", pin.String())
 	if css.config.batchingEnabled() {
 		batched := make(chan error)
 		css.sendToBatchCh <- batchItem{
@@ -590,7 +590,7 @@ func (css *Consensus) batchWorker() {
 func (css *Consensus) Peers(ctx context.Context) ([]peer.ID, error) {
 	ctx, span := trace.StartSpan(ctx, "consensus/Peers")
 	defer span.End()
-
+	logger.Debugf("starting Consensus/Peers")
 	var metrics []api.Metric
 
 	err := css.rpcClient.CallContext(
@@ -632,12 +632,14 @@ func (css *Consensus) WaitForSync(ctx context.Context) error { return nil }
 // AddPeer is a no-op as we do not need to do peerset management with
 // Merkle-CRDTs. Therefore adding a peer to the peerset means doing nothing.
 func (css *Consensus) AddPeer(ctx context.Context, pid peer.ID) error {
+	logger.Debugf("starting Consensus/AddPeer for %v", pid.String())
 	return nil
 }
 
 // RmPeer is a no-op which always errors, as, since we do not do peerset
 // management, we also have no ability to remove a peer from it.
 func (css *Consensus) RmPeer(ctx context.Context, pid peer.ID) error {
+	logger.Debugf("starting Consensus/RmPeer for %v", pid.String())
 	return ErrRmPeer
 }
 

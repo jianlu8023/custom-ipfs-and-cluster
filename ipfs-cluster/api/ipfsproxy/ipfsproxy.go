@@ -109,6 +109,8 @@ func (lw logWriter) Write(b []byte) (int, error) {
 
 // New returns and ipfs Proxy component
 func New(cfg *Config) (*Server, error) {
+	logger.Debugf("starting new ipfs proxy server")
+	proxyLogger.Debugf("starting new ipfs proxy server")
 	err := cfg.Validate()
 	if err != nil {
 		return nil, err
@@ -283,6 +285,8 @@ func New(cfg *Config) (*Server, error) {
 // SetClient makes the component ready to perform RPC
 // requests.
 func (proxy *Server) SetClient(c *rpc.Client) {
+	logger.Debugf("starting set client")
+	proxyLogger.Debugf("starting set client")
 	proxy.rpcClient = c
 	proxy.rpcReady <- struct{}{}
 }
@@ -290,6 +294,8 @@ func (proxy *Server) SetClient(c *rpc.Client) {
 // Shutdown stops any listeners and stops the component from taking
 // any requests.
 func (proxy *Server) Shutdown(ctx context.Context) error {
+	logger.Debugf("starting shutdown")
+	proxyLogger.Debugf("starting shutdown")
 	proxy.shutdownLock.Lock()
 	defer proxy.shutdownLock.Unlock()
 
@@ -314,6 +320,8 @@ func (proxy *Server) Shutdown(ctx context.Context) error {
 
 // launches proxy when we receive the rpcReady signal.
 func (proxy *Server) run() {
+	logger.Debugf("starting run")
+	proxyLogger.Debugf("starting run")
 	<-proxy.rpcReady
 
 	// Do not shutdown while launching threads
@@ -347,6 +355,8 @@ func (proxy *Server) run() {
 
 // ipfsErrorResponder writes an http error response just like IPFS would.
 func ipfsErrorResponder(w http.ResponseWriter, errMsg string, code int) {
+	logger.Debugf("starting ipfsErrorResponder with errMsg %v and code %v", errMsg, code)
+	proxyLogger.Debugf("starting ipfsErrorResponder with errMsg %v and code %v", errMsg, code)
 	res := cmd.Errorf(cmd.ErrNormal, errMsg)
 
 	resBytes, _ := json.Marshal(res)
@@ -360,6 +370,7 @@ func ipfsErrorResponder(w http.ResponseWriter, errMsg string, code int) {
 
 func (proxy *Server) pinOpHandler(op string, w http.ResponseWriter, r *http.Request) {
 	logger.Debugf("starting pinOpHandler op %v", op)
+	proxyLogger.Debugf("starting pinOpHandler op %v", op)
 	proxy.setHeaders(w.Header(), r)
 
 	q := r.URL.Query()
@@ -396,16 +407,19 @@ func (proxy *Server) pinOpHandler(op string, w http.ResponseWriter, r *http.Requ
 
 func (proxy *Server) pinHandler(w http.ResponseWriter, r *http.Request) {
 	logger.Debugf("starting pinHandler from %v", r.Host)
+	proxyLogger.Debugf("starting pinHandler from %v", r.Host)
 	proxy.pinOpHandler("PinPath", w, r)
 }
 
 func (proxy *Server) unpinHandler(w http.ResponseWriter, r *http.Request) {
 	logger.Debugf("starting unpinHandler from %v", r.Host)
+	proxyLogger.Debugf("starting unpinHandler from %v", r.Host)
 	proxy.pinOpHandler("UnpinPath", w, r)
 }
 
 func (proxy *Server) pinLsHandler(w http.ResponseWriter, r *http.Request) {
 	logger.Debugf("starting pinLsHandler from %v", r.Host)
+	proxyLogger.Debugf("starting pinLsHandler from %v", r.Host)
 	proxy.setHeaders(w.Header(), r)
 
 	arg := r.URL.Query().Get("arg")
@@ -515,6 +529,7 @@ func (proxy *Server) pinLsHandler(w http.ResponseWriter, r *http.Request) {
 
 func (proxy *Server) pinUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	logger.Debugf("starting pinUpdateHandler from %v", r.Host)
+	proxyLogger.Debugf("starting pinUpdateHandler from %v", r.Host)
 	ctx, span := trace.StartSpan(r.Context(), "ipfsproxy/pinUpdateHandler")
 	defer span.End()
 
@@ -609,6 +624,7 @@ func (proxy *Server) pinUpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 func (proxy *Server) addHandler(w http.ResponseWriter, r *http.Request) {
 	logger.Debugf("starting addHandler from %v", r.Host)
+	proxyLogger.Debugf("starting addHandler from %v", r.Host)
 	proxy.setHeaders(w.Header(), r)
 
 	reader, err := r.MultipartReader()
@@ -671,6 +687,7 @@ func (proxy *Server) addHandler(w http.ResponseWriter, r *http.Request) {
 
 func (proxy *Server) repoStatHandler(w http.ResponseWriter, r *http.Request) {
 	logger.Debugf("starting repoStatHandler from %v", r.Host)
+	proxyLogger.Debugf("starting repoStatHandler from %v", r.Host)
 	proxy.setHeaders(w.Header(), r)
 
 	peers := make([]peer.ID, 0)
@@ -731,7 +748,8 @@ type ipfsRepoGCResp struct {
 }
 
 func (proxy *Server) repoGCHandler(w http.ResponseWriter, r *http.Request) {
-
+	logger.Debugf("starting repoGCHandler from %v", r.Host)
+	proxyLogger.Debugf("starting repoGCHandler from %v", r.Host)
 	queryValues := r.URL.Query()
 	streamErrors := queryValues.Get("stream-errors") == "true"
 	// ignoring `quiet` since it only affects text output
@@ -787,7 +805,8 @@ type ipfsBlockPutResp struct {
 }
 
 func (proxy *Server) blockPutHandler(w http.ResponseWriter, r *http.Request) {
-
+	logger.Debugf("starting blockPutHandler from %v", r.Host)
+	proxyLogger.Debugf("starting blockPutHandler from %v", r.Host)
 	if r.URL.Query().Get("pin") != "true" {
 		proxy.reverseProxy.ServeHTTP(w, r)
 		return
@@ -866,7 +885,8 @@ type ipfsDagPutResp struct {
 }
 
 func (proxy *Server) dagPutHandler(w http.ResponseWriter, r *http.Request) {
-
+	logger.Debugf("starting dagPutHandler from %v", r.Host)
+	proxyLogger.Debugf("starting dagPutHandler from %v", r.Host)
 	// Note this mostly duplicates blockPutHandler
 	if r.URL.Query().Get("pin") != "true" {
 		proxy.reverseProxy.ServeHTTP(w, r)
@@ -949,6 +969,8 @@ func (proxy *Server) dagPutHandler(w http.ResponseWriter, r *http.Request) {
 // for it. Our handlers expect that arguments are passed in the ?arg query
 // value.
 func slashHandler(origHandler http.HandlerFunc) http.HandlerFunc {
+	logger.Debugf("starting slashHandler")
+	proxyLogger.Debugf("starting slashHandler")
 	return func(w http.ResponseWriter, r *http.Request) {
 		warnMsg := "You are using an undocumented form of the IPFS API. "
 		warnMsg += "Consider passing your command arguments"

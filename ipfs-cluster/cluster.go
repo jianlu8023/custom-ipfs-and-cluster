@@ -329,7 +329,7 @@ func (c *Cluster) sendInformerMetrics(ctx context.Context, informer Informer) (t
 func (c *Cluster) sendInformersMetrics(ctx context.Context) error {
 	ctx, span := trace.StartSpan(ctx, "cluster/sendInformersMetrics")
 	defer span.End()
-
+	logger.Debugf("starting Cluster/sendInformersMetrics")
 	var errors error
 	for _, informer := range c.informers {
 		_, err := c.sendInformerMetrics(ctx, informer)
@@ -463,6 +463,7 @@ func (c *Cluster) pushPingMetrics(ctx context.Context) {
 // Alerts returns the last alerts recorded by this cluster peer with the most
 // recent first.
 func (c *Cluster) Alerts() []api.Alert {
+	logger.Debugf("starting Cluster/Alerts")
 	c.alertsMux.Lock()
 	alerts := make([]api.Alert, len(c.alerts))
 	{
@@ -893,6 +894,7 @@ func (c *Cluster) Done() <-chan struct{} {
 func (c *Cluster) ID(ctx context.Context) api.ID {
 	ctx, span := trace.StartSpan(ctx, "cluster/ID")
 	defer span.End()
+	logger.Debugf("starting Cluster/ID")
 
 	// ignore error since it is included in response object
 	ipfsID, err := c.ipfs.ID(ctx)
@@ -960,7 +962,7 @@ func (c *Cluster) ID(ctx context.Context) api.ID {
 func (c *Cluster) PeerAdd(ctx context.Context, pid peer.ID) (*api.ID, error) {
 	ctx, span := trace.StartSpan(ctx, "cluster/PeerAdd")
 	defer span.End()
-
+	logger.Debugf("starting Cluster/PeerAdd with %s", pid.String())
 	c.shutdownLock.RLock()
 	defer c.shutdownLock.RUnlock()
 	if c.shutdownB {
@@ -1000,7 +1002,7 @@ func (c *Cluster) PeerAdd(ctx context.Context, pid peer.ID) (*api.ID, error) {
 func (c *Cluster) PeerRemove(ctx context.Context, pid peer.ID) error {
 	ctx, span := trace.StartSpan(ctx, "cluster/PeerRemove")
 	defer span.End()
-
+	logger.Debugf("starting Cluster/PeerRemove with %s", pid.String())
 	// We need to repin before removing the peer, otherwise, it won't
 	// be able to submit the pins.
 	logger.Infof("re-allocating all CIDs directly associated to %s", pid)
@@ -1022,7 +1024,7 @@ func (c *Cluster) PeerRemove(ctx context.Context, pid peer.ID) error {
 func (c *Cluster) Join(ctx context.Context, addr ma.Multiaddr) error {
 	ctx, span := trace.StartSpan(ctx, "cluster/Join")
 	defer span.End()
-
+	logger.Debugf("starting Cluster/Join with %s", addr.String())
 	logger.Debugf("Join(%s)", addr)
 
 	// Add peer to peerstore so we can talk to it
@@ -1203,7 +1205,7 @@ func (c *Cluster) StateSync(ctx context.Context) error {
 func (c *Cluster) StatusAll(ctx context.Context, filter api.TrackerStatus, out chan<- api.GlobalPinInfo) error {
 	ctx, span := trace.StartSpan(ctx, "cluster/StatusAll")
 	defer span.End()
-
+	logger.Debugf("starting Cluster/StatusAll")
 	in := make(chan api.TrackerStatus, 1)
 	in <- filter
 	close(in)
@@ -1215,7 +1217,7 @@ func (c *Cluster) StatusAll(ctx context.Context, filter api.TrackerStatus, out c
 func (c *Cluster) StatusAllLocal(ctx context.Context, filter api.TrackerStatus, out chan<- api.PinInfo) error {
 	ctx, span := trace.StartSpan(ctx, "cluster/StatusAllLocal")
 	defer span.End()
-
+	logger.Debugf("starting Cluster/StatusAllLocal")
 	return c.tracker.StatusAll(ctx, filter, out)
 }
 
@@ -1225,7 +1227,7 @@ func (c *Cluster) StatusAllLocal(ctx context.Context, filter api.TrackerStatus, 
 func (c *Cluster) Status(ctx context.Context, h api.Cid) (api.GlobalPinInfo, error) {
 	ctx, span := trace.StartSpan(ctx, "cluster/Status")
 	defer span.End()
-
+	logger.Debugf("starting Cluster/Status for %v", h.String())
 	return c.globalPinInfoCid(ctx, "PinTracker", "Status", h)
 }
 
@@ -1233,7 +1235,7 @@ func (c *Cluster) Status(ctx context.Context, h api.Cid) (api.GlobalPinInfo, err
 func (c *Cluster) StatusLocal(ctx context.Context, h api.Cid) api.PinInfo {
 	ctx, span := trace.StartSpan(ctx, "cluster/StatusLocal")
 	defer span.End()
-
+	logger.Debugf("starting Cluster/StatusLocal for %v", h.String())
 	return c.tracker.Status(ctx, h)
 }
 
@@ -1269,7 +1271,7 @@ func (c *Cluster) localPinInfoOp(
 func (c *Cluster) RecoverAll(ctx context.Context, out chan<- api.GlobalPinInfo) error {
 	ctx, span := trace.StartSpan(ctx, "cluster/RecoverAll")
 	defer span.End()
-
+	logger.Debugf("starting Cluster/RecoverAll")
 	return c.globalPinInfoStream(ctx, "Cluster", "RecoverAllLocal", nil, out)
 }
 
@@ -1287,7 +1289,7 @@ func (c *Cluster) RecoverAll(ctx context.Context, out chan<- api.GlobalPinInfo) 
 func (c *Cluster) RecoverAllLocal(ctx context.Context, out chan<- api.PinInfo) error {
 	ctx, span := trace.StartSpan(ctx, "cluster/RecoverAllLocal")
 	defer span.End()
-
+	logger.Debugf("starting Cluster/RecoverAllLocal")
 	return c.tracker.RecoverAll(ctx, out)
 }
 
@@ -1300,7 +1302,7 @@ func (c *Cluster) RecoverAllLocal(ctx context.Context, out chan<- api.PinInfo) e
 func (c *Cluster) Recover(ctx context.Context, h api.Cid) (api.GlobalPinInfo, error) {
 	ctx, span := trace.StartSpan(ctx, "cluster/Recover")
 	defer span.End()
-
+	logger.Debugf("starting Cluster/Recover for %v", h.String())
 	return c.globalPinInfoCid(ctx, "PinTracker", "Recover", h)
 }
 
@@ -1313,7 +1315,7 @@ func (c *Cluster) Recover(ctx context.Context, h api.Cid) (api.GlobalPinInfo, er
 func (c *Cluster) RecoverLocal(ctx context.Context, h api.Cid) (api.PinInfo, error) {
 	ctx, span := trace.StartSpan(ctx, "cluster/RecoverLocal")
 	defer span.End()
-
+	logger.Debugf("starting Cluster/RecoverLocal for %v", h.String())
 	return c.localPinInfoOp(ctx, h, c.tracker.Recover)
 }
 
@@ -1327,7 +1329,7 @@ func (c *Cluster) RecoverLocal(ctx context.Context, h api.Cid) (api.PinInfo, err
 func (c *Cluster) Pins(ctx context.Context, out chan<- api.Pin) error {
 	ctx, span := trace.StartSpan(ctx, "cluster/Pins")
 	defer span.End()
-
+	logger.Debugf("starting Cluster/Pins")
 	cState, err := c.consensus.State(ctx)
 	if err != nil {
 		logger.Error(err)
@@ -1366,7 +1368,7 @@ func (c *Cluster) pinsSlice(ctx context.Context) ([]api.Pin, error) {
 func (c *Cluster) PinGet(ctx context.Context, h api.Cid) (api.Pin, error) {
 	ctx, span := trace.StartSpan(ctx, "cluster/PinGet")
 	defer span.End()
-
+	logger.Debugf("starting Cluster/PinGet for %v", h.String())
 	st, err := c.consensus.State(ctx)
 	if err != nil {
 		return api.Pin{}, err
@@ -1523,9 +1525,9 @@ func (c *Cluster) pin(
 	pin api.Pin,
 	blacklist []peer.ID,
 ) (api.Pin, bool, error) {
-
 	ctx, span := trace.StartSpan(ctx, "cluster/pin")
 	defer span.End()
+	logger.Debugf("starting Cluster/pin")
 
 	if c.config.FollowerMode {
 		return api.Pin{}, false, errFollowerMode
@@ -1602,6 +1604,7 @@ func (c *Cluster) pin(
 func (c *Cluster) Unpin(ctx context.Context, h api.Cid) (api.Pin, error) {
 	ctx, span := trace.StartSpan(ctx, "cluster/Unpin")
 	defer span.End()
+	logger.Debugf("starting Cluster/Unpin for %v", h.String())
 
 	if c.config.FollowerMode {
 		return api.Pin{}, errFollowerMode
@@ -1694,6 +1697,7 @@ func (c *Cluster) PinUpdate(ctx context.Context, from api.Cid, to api.Cid, opts 
 func (c *Cluster) PinPath(ctx context.Context, path string, opts api.PinOptions) (api.Pin, error) {
 	ctx, span := trace.StartSpan(ctx, "cluster/PinPath")
 	defer span.End()
+	logger.Debugf("starting Cluster/PinPath for %v", path)
 
 	ci, err := c.ipfs.Resolve(ctx, path)
 	if err != nil {
@@ -1708,7 +1712,7 @@ func (c *Cluster) PinPath(ctx context.Context, path string, opts api.PinOptions)
 func (c *Cluster) UnpinPath(ctx context.Context, path string) (api.Pin, error) {
 	ctx, span := trace.StartSpan(ctx, "cluster/UnpinPath")
 	defer span.End()
-
+	logger.Debugf("starting Cluster/UnpinPath for %v", path)
 	ci, err := c.ipfs.Resolve(ctx, path)
 	if err != nil {
 		return api.Pin{}, err
@@ -1737,6 +1741,7 @@ func (c *Cluster) AddFile(ctx context.Context, reader *multipart.Reader, params 
 
 // Version returns the current IPFS Cluster version.
 func (c *Cluster) Version() string {
+	logger.Debugf("starting Cluster/Version")
 	return version.Version.String()
 }
 
@@ -1745,7 +1750,7 @@ func (c *Cluster) Version() string {
 func (c *Cluster) Peers(ctx context.Context, out chan<- api.ID) {
 	ctx, span := trace.StartSpan(ctx, "cluster/Peers")
 	defer span.End()
-
+	logger.Debugf("starting Cluster/Peers")
 	peers, err := c.consensus.Peers(ctx)
 	if err != nil {
 		logger.Error(err)
@@ -1759,7 +1764,7 @@ func (c *Cluster) Peers(ctx context.Context, out chan<- api.ID) {
 // requests IDs from a given number of peers.
 func (c *Cluster) peersWithFilter(ctx context.Context, peers []peer.ID, out chan<- api.ID) {
 	defer close(out)
-
+	logger.Debugf("starting Cluster/peersWithFilter")
 	// We should be done relatively quickly with this call. Otherwise
 	// report errors.
 	timeout := 15 * time.Second
@@ -2224,7 +2229,7 @@ func (c *Cluster) cidsFromMetaPin(ctx context.Context, h api.Cid) ([]api.Cid, er
 func (c *Cluster) RepoGC(ctx context.Context) (api.GlobalRepoGC, error) {
 	ctx, span := trace.StartSpan(ctx, "cluster/RepoGC")
 	defer span.End()
-
+	logger.Debugf("starting Cluster/RepoGC")
 	members, err := c.consensus.Peers(ctx)
 	if err != nil {
 		logger.Error(err)
@@ -2273,7 +2278,7 @@ func (c *Cluster) RepoGC(ctx context.Context) (api.GlobalRepoGC, error) {
 func (c *Cluster) RepoGCLocal(ctx context.Context) (api.RepoGC, error) {
 	ctx, span := trace.StartSpan(ctx, "cluster/RepoGCLocal")
 	defer span.End()
-
+	logger.Debugf("starting Cluster/RepoGCLocal")
 	resp, err := c.ipfs.RepoGC(ctx)
 	if err != nil {
 		return api.RepoGC{}, err

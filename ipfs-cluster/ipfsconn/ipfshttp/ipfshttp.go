@@ -135,6 +135,7 @@ type ipfsPeer struct {
 
 // NewConnector creates the component and leaves it ready to be started
 func NewConnector(cfg *Config) (*Connector, error) {
+	logger.Debugf("starting create ipfs connector ")
 	err := cfg.Validate()
 	if err != nil {
 		return nil, err
@@ -343,6 +344,7 @@ func (ipfs *Connector) Ready(ctx context.Context) <-chan struct{} {
 // If the request fails, or the parsing fails, it
 // returns an error.
 func (ipfs *Connector) ID(ctx context.Context) (api.IPFSID, error) {
+	logger.Debugf("starting ipfs http ID request")
 	ctx, span := trace.StartSpan(ctx, "ipfsconn/ipfshttp/ID")
 	defer span.End()
 
@@ -399,9 +401,9 @@ func pinArgs(maxDepth api.PinDepth) string {
 // Pin performs a pin request against the configured IPFS
 // daemon.
 func (ipfs *Connector) Pin(ctx context.Context, pin api.Pin) error {
-
 	ctx, span := trace.StartSpan(ctx, "ipfsconn/ipfshttp/Pin")
 	defer span.End()
+	logger.Debugf("starting ipfs http Pin request for %v", pin.String())
 
 	hash := pin.Cid
 	maxDepth := pin.MaxDepth
@@ -507,12 +509,14 @@ func (ipfs *Connector) Pin(ctx context.Context, pin api.Pin) error {
 // channel.  pinProgress will not block on sending to the channel if it is full.
 func (ipfs *Connector) pinProgress(ctx context.Context, hash api.Cid, maxDepth api.PinDepth, out chan<- int) error {
 	defer close(out)
-
 	ctx, span := trace.StartSpan(ctx, "ipfsconn/ipfshttp/pinsProgress")
 	defer span.End()
+	logger.Debugf("starting ipfs http pinProgress for %v ", hash.String())
 
 	pinArgs := pinArgs(maxDepth)
 	path := fmt.Sprintf("pin/add?arg=%s&%s&progress=true", hash, pinArgs)
+
+	logger.Debugf("pinProgress path %v", path)
 
 	body, err := ipfs.postCtxStreamResponse(ctx, path, "", nil)
 	if err != nil {
@@ -547,8 +551,12 @@ func (ipfs *Connector) pinProgress(ctx context.Context, hash api.Cid, maxDepth a
 func (ipfs *Connector) pinUpdate(ctx context.Context, from, to api.Cid) error {
 	ctx, span := trace.StartSpan(ctx, "ipfsconn/ipfshttp/pinUpdate")
 	defer span.End()
+	logger.Debugf("starting ipfs http pinUpdate request")
 
 	path := fmt.Sprintf("pin/update?arg=%s&arg=%s&unpin=false", from, to)
+
+	logger.Debugf("pinUpdate path %v", path)
+
 	_, err := ipfs.postCtx(ctx, path, "", nil)
 	if err != nil {
 		return err
@@ -564,6 +572,7 @@ func (ipfs *Connector) pinUpdate(ctx context.Context, from, to api.Cid) error {
 func (ipfs *Connector) Unpin(ctx context.Context, hash api.Cid) error {
 	ctx, span := trace.StartSpan(ctx, "ipfsconn/ipfshttp/Unpin")
 	defer span.End()
+	logger.Debugf("starting ipfs http Unpin request for %v", hash.String())
 
 	if ipfs.config.UnpinDisable {
 		return errors.New("ipfs unpinning is disallowed by configuration on this peer")
@@ -572,6 +581,8 @@ func (ipfs *Connector) Unpin(ctx context.Context, hash api.Cid) error {
 	defer ipfs.updateInformerMetric(ctx)
 
 	path := fmt.Sprintf("pin/rm?arg=%s", hash)
+
+	logger.Debugf("UnPin path %v", path)
 
 	ctx, cancel := context.WithTimeout(ctx, ipfs.config.UnpinTimeout)
 	defer cancel()
@@ -599,10 +610,12 @@ func (ipfs *Connector) Unpin(ctx context.Context, hash api.Cid) error {
 // IPFS daemon and sends the results on the given channel. Returns when done.
 func (ipfs *Connector) PinLs(ctx context.Context, typeFilters []string, out chan<- api.IPFSPinInfo) error {
 	defer close(out)
+
 	bodies := make([]io.ReadCloser, len(typeFilters))
 
 	ctx, span := trace.StartSpan(ctx, "ipfsconn/ipfshttp/PinLs")
 	defer span.End()
+	logger.Debugf("starting ipfs http PinLs request")
 
 	ctx, cancel := context.WithTimeout(ctx, ipfs.config.IPFSRequestTimeout)
 	defer cancel()
@@ -620,6 +633,9 @@ nextFilter:
 	for i, typeFilter := range typeFilters {
 		// Post and read streaming response
 		path := "pin/ls?stream=true&type=" + typeFilter
+
+		logger.Debugf("PinLs index %v path %v", i, path)
+
 		bodies[i], err = ipfs.postCtxStreamResponse(ctx, path, "", nil)
 		if err != nil {
 			return err
@@ -665,9 +681,9 @@ nextFilter:
 // "type=direct" (or other) depending on the given pin's MaxDepth setting.
 // It returns an api.IPFSPinStatus for that hash.
 func (ipfs *Connector) PinLsCid(ctx context.Context, pin api.Pin) (api.IPFSPinStatus, error) {
-
 	ctx, span := trace.StartSpan(ctx, "ipfsconn/ipfshttp/PinLsCid")
 	defer span.End()
+	logger.Debugf("starting ipfs http PinLsCid request for %v", pin.String())
 
 	ctx, cancel := context.WithTimeout(ctx, ipfs.config.IPFSRequestTimeout)
 	defer cancel()
@@ -678,6 +694,9 @@ func (ipfs *Connector) PinLsCid(ctx context.Context, pin api.Pin) (api.IPFSPinSt
 
 	pinType := pin.MaxDepth.ToPinMode().String()
 	lsPath := fmt.Sprintf("pin/ls?stream=true&arg=%s&type=%s", pin.Cid, pinType)
+
+	logger.Debugf("PinLsCid path %v", lsPath)
+
 	body, err := ipfs.postCtxStreamResponse(ctx, lsPath, "", nil)
 	if err != nil {
 		if errors.Is(ipfsUnpinnedError{}, err) {
@@ -704,6 +723,7 @@ func (ipfs *Connector) PinLsCid(ctx context.Context, pin api.Pin) (api.IPFSPinSt
 func (ipfs *Connector) ConnectSwarms(ctx context.Context) error {
 	ctx, span := trace.StartSpan(ctx, "ipfsconn/ipfshttp/ConnectSwarms")
 	defer span.End()
+	logger.Debug("starting ipfs http ConnectSwarms request")
 
 	ctx, cancel := context.WithTimeout(ctx, ipfs.config.IPFSRequestTimeout)
 	defer cancel()
@@ -799,6 +819,7 @@ func getConfigValue(path []string, cfg map[string]interface{}) (interface{}, err
 func (ipfs *Connector) RepoStat(ctx context.Context) (api.IPFSRepoStat, error) {
 	ctx, span := trace.StartSpan(ctx, "ipfsconn/ipfshttp/RepoStat")
 	defer span.End()
+	logger.Debugf("starting ipfs http RepoStat request")
 
 	ctx, cancel := context.WithTimeout(ctx, ipfs.config.IPFSRequestTimeout)
 	defer cancel()
@@ -820,6 +841,7 @@ func (ipfs *Connector) RepoStat(ctx context.Context) (api.IPFSRepoStat, error) {
 func (ipfs *Connector) RepoGC(ctx context.Context) (api.RepoGC, error) {
 	ctx, span := trace.StartSpan(ctx, "ipfsconn/ipfshttp/RepoGC")
 	defer span.End()
+	logger.Debugf("starting ipfs http RepoGC request")
 
 	ctx, cancel := context.WithTimeout(ctx, ipfs.config.RepoGCTimeout)
 	defer cancel()
@@ -861,6 +883,7 @@ func (ipfs *Connector) RepoGC(ctx context.Context) (api.RepoGC, error) {
 func (ipfs *Connector) Resolve(ctx context.Context, path string) (api.Cid, error) {
 	ctx, span := trace.StartSpan(ctx, "ipfsconn/ipfshttp/Resolve")
 	defer span.End()
+	logger.Debugf("starting ipfs http Resolve request for %s", path)
 
 	validPath, err := gopath.NewPath(path)
 	if err != nil {
@@ -907,6 +930,7 @@ func (ipfs *Connector) Resolve(ctx context.Context, path string) (api.Cid, error
 func (ipfs *Connector) SwarmPeers(ctx context.Context) ([]peer.ID, error) {
 	ctx, span := trace.StartSpan(ctx, "ipfsconn/ipfshttp/SwarmPeers")
 	defer span.End()
+	logger.Debugf("starting ipfs http SwarmPeers request")
 
 	ctx, cancel := context.WithTimeout(ctx, ipfs.config.IPFSRequestTimeout)
 	defer cancel()
@@ -1096,6 +1120,7 @@ func blockPutQuery(prefix cid.Prefix) (url.Values, error) {
 func (ipfs *Connector) BlockStream(ctx context.Context, blocks <-chan api.NodeWithMeta) error {
 	ctx, span := trace.StartSpan(ctx, "ipfsconn/ipfshttp/BlockStream")
 	defer span.End()
+	logger.Debugf("starting ipfs http BlockStream request")
 
 	logger.Debug("streaming blocks to IPFS")
 	defer ipfs.updateInformerMetric(ctx)
@@ -1123,6 +1148,8 @@ func (ipfs *Connector) BlockStream(ctx context.Context, blocks <-chan api.NodeWi
 		return err
 	}
 	url := "block/put?" + q.Encode()
+
+	logger.Debugf("BlockStream path %v", url)
 
 	// Now we stream the blocks to ipfs. In case of error, we return
 	// directly, but leave a goroutine draining the channel until it is
@@ -1169,10 +1196,14 @@ func (ipfs *Connector) BlockStream(ctx context.Context, blocks <-chan api.NodeWi
 func (ipfs *Connector) BlockGet(ctx context.Context, c api.Cid) ([]byte, error) {
 	ctx, span := trace.StartSpan(ctx, "ipfsconn/ipfshttp/BlockGet")
 	defer span.End()
+	logger.Debugf("starting ipfs http BlockGet request for %v", c.String())
 
 	ctx, cancel := context.WithTimeout(ctx, ipfs.config.IPFSRequestTimeout)
 	defer cancel()
 	url := "block/get?arg=" + c.String()
+
+	logger.Debugf("BlockGet path %v", url)
+
 	return ipfs.postCtx(ctx, url, "", nil)
 }
 

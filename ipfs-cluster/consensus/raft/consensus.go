@@ -373,7 +373,7 @@ func (cc *Consensus) commit(ctx context.Context, op *LogOp, rpcOp string, redire
 func (cc *Consensus) LogPin(ctx context.Context, pin api.Pin) error {
 	ctx, span := trace.StartSpan(ctx, "consensus/LogPin")
 	defer span.End()
-
+	logger.Debugf("starting Consensus/LogPin for %v", pin.String())
 	op := cc.op(ctx, pin, LogOpPin)
 	err := cc.commit(ctx, op, "LogPin", pin)
 	if err != nil {
@@ -386,7 +386,7 @@ func (cc *Consensus) LogPin(ctx context.Context, pin api.Pin) error {
 func (cc *Consensus) LogUnpin(ctx context.Context, pin api.Pin) error {
 	ctx, span := trace.StartSpan(ctx, "consensus/LogUnpin")
 	defer span.End()
-
+	logger.Debugf("starting Consensus/LogUnpin for %v", pin.String())
 	op := cc.op(ctx, pin, LogOpUnpin)
 	err := cc.commit(ctx, op, "LogUnpin", pin)
 	if err != nil {
@@ -400,7 +400,7 @@ func (cc *Consensus) LogUnpin(ctx context.Context, pin api.Pin) error {
 func (cc *Consensus) AddPeer(ctx context.Context, pid peer.ID) error {
 	ctx, span := trace.StartSpan(ctx, "consensus/AddPeer")
 	defer span.End()
-
+	logger.Debugf("starting Consensus/AddPeer for %v", pid.String())
 	var finalErr error
 	for i := 0; i <= cc.config.CommitRetries; i++ {
 		logger.Debugf("attempt #%d: AddPeer %s", i, pid)
@@ -431,7 +431,7 @@ func (cc *Consensus) AddPeer(ctx context.Context, pid peer.ID) error {
 func (cc *Consensus) RmPeer(ctx context.Context, pid peer.ID) error {
 	ctx, span := trace.StartSpan(ctx, "consensus/RmPeer")
 	defer span.End()
-
+	logger.Debugf("starting Consensus/RmPeer for %v", pid.String())
 	var finalErr error
 	for i := 0; i <= cc.config.CommitRetries; i++ {
 		logger.Debugf("attempt #%d: RmPeer %s", i, pid)
@@ -520,7 +520,7 @@ func (cc *Consensus) Rollback(state state.State) error {
 func (cc *Consensus) Peers(ctx context.Context) ([]peer.ID, error) {
 	ctx, span := trace.StartSpan(ctx, "consensus/Peers")
 	defer span.End()
-
+	logger.Debugf("starting Consensus/Peers")
 	cc.shutdownLock.RLock() // prevent shutdown while here
 	defer cc.shutdownLock.RUnlock()
 

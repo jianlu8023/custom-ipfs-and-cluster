@@ -154,6 +154,7 @@ type PeerMonitorRPCAPI struct {
 
 // ID runs Cluster.ID()
 func (rpcapi *ClusterRPCAPI) ID(ctx context.Context, in struct{}, out *api.ID) error {
+	logger.Debugf("starting ClusterRPCAPI/ID")
 	id := rpcapi.c.ID(ctx)
 	*out = id
 	return nil
@@ -161,6 +162,7 @@ func (rpcapi *ClusterRPCAPI) ID(ctx context.Context, in struct{}, out *api.ID) e
 
 // IDStream runs Cluster.ID() but in streaming form.
 func (rpcapi *ClusterRPCAPI) IDStream(ctx context.Context, in <-chan struct{}, out chan<- api.ID) error {
+	logger.Debugf("starting ClusterRPCAPI/IDStream")
 	defer close(out)
 	id := rpcapi.c.ID(ctx)
 	select {
@@ -176,7 +178,7 @@ func (rpcapi *ClusterRPCAPI) Pin(ctx context.Context, in api.Pin, out *api.Pin) 
 	// we do not call the Pin method directly since that method does not
 	// allow to pin other than regular DataType pins. The adder will
 	// however send Meta, Shard and ClusterDAG pins.
-
+	logger.Debugf("starting ClusterRPCAPI/Pin")
 	pin, _, err := rpcapi.c.pin(ctx, in, []peer.ID{})
 	if err != nil {
 		return err
@@ -187,6 +189,7 @@ func (rpcapi *ClusterRPCAPI) Pin(ctx context.Context, in api.Pin, out *api.Pin) 
 
 // Unpin runs Cluster.Unpin().
 func (rpcapi *ClusterRPCAPI) Unpin(ctx context.Context, in api.Pin, out *api.Pin) error {
+	logger.Debugf("starting ClusterRPCAPI/Unpin")
 	pin, err := rpcapi.c.Unpin(ctx, in.Cid)
 	if err != nil {
 		return err
@@ -197,6 +200,7 @@ func (rpcapi *ClusterRPCAPI) Unpin(ctx context.Context, in api.Pin, out *api.Pin
 
 // PinPath resolves path into a cid and runs Cluster.Pin().
 func (rpcapi *ClusterRPCAPI) PinPath(ctx context.Context, in api.PinPath, out *api.Pin) error {
+	logger.Debugf("starting ClusterRPCAPI/PinPath")
 	pin, err := rpcapi.c.PinPath(ctx, in.Path, in.PinOptions)
 	if err != nil {
 		return err
@@ -207,6 +211,7 @@ func (rpcapi *ClusterRPCAPI) PinPath(ctx context.Context, in api.PinPath, out *a
 
 // UnpinPath resolves path into a cid and runs Cluster.Unpin().
 func (rpcapi *ClusterRPCAPI) UnpinPath(ctx context.Context, in api.PinPath, out *api.Pin) error {
+	logger.Debugf("starting ClusterRPCAPI/UnpinPath")
 	pin, err := rpcapi.c.UnpinPath(ctx, in.Path)
 	if err != nil {
 		return err
@@ -217,11 +222,13 @@ func (rpcapi *ClusterRPCAPI) UnpinPath(ctx context.Context, in api.PinPath, out 
 
 // Pins runs Cluster.Pins().
 func (rpcapi *ClusterRPCAPI) Pins(ctx context.Context, in <-chan struct{}, out chan<- api.Pin) error {
+	logger.Debugf("starting ClusterRPCAPI/Pins")
 	return rpcapi.c.Pins(ctx, out)
 }
 
 // PinGet runs Cluster.PinGet().
 func (rpcapi *ClusterRPCAPI) PinGet(ctx context.Context, in api.Cid, out *api.Pin) error {
+	logger.Debugf("starting ClusterRPCAPI/PinGet")
 	pin, err := rpcapi.c.PinGet(ctx, in)
 	if err != nil {
 		return err
@@ -232,6 +239,7 @@ func (rpcapi *ClusterRPCAPI) PinGet(ctx context.Context, in api.Cid, out *api.Pi
 
 // Version runs Cluster.Version().
 func (rpcapi *ClusterRPCAPI) Version(ctx context.Context, in struct{}, out *api.Version) error {
+	logger.Debugf("starting ClusterRPCAPI/Version")
 	*out = api.Version{
 		Version: rpcapi.c.Version(),
 	}
@@ -240,12 +248,14 @@ func (rpcapi *ClusterRPCAPI) Version(ctx context.Context, in struct{}, out *api.
 
 // Peers runs Cluster.Peers().
 func (rpcapi *ClusterRPCAPI) Peers(ctx context.Context, in <-chan struct{}, out chan<- api.ID) error {
+	logger.Debugf("starting ClusterRPCAPI/Peers")
 	rpcapi.c.Peers(ctx, out)
 	return nil
 }
 
 // PeersWithFilter runs Cluster.peersWithFilter().
 func (rpcapi *ClusterRPCAPI) PeersWithFilter(ctx context.Context, in <-chan []peer.ID, out chan<- api.ID) error {
+	logger.Debugf("starting ClusterRPCAPI/PeersWithFilter")
 	peers := <-in
 	rpcapi.c.peersWithFilter(ctx, peers, out)
 	return nil
@@ -253,6 +263,7 @@ func (rpcapi *ClusterRPCAPI) PeersWithFilter(ctx context.Context, in <-chan []pe
 
 // PeerAdd runs Cluster.PeerAdd().
 func (rpcapi *ClusterRPCAPI) PeerAdd(ctx context.Context, in peer.ID, out *api.ID) error {
+	logger.Debugf("starting ClusterRPCAPI/PeerAdd")
 	id, err := rpcapi.c.PeerAdd(ctx, in)
 	if err != nil {
 		return err
@@ -263,6 +274,7 @@ func (rpcapi *ClusterRPCAPI) PeerAdd(ctx context.Context, in peer.ID, out *api.I
 
 // ConnectGraph runs Cluster.GetConnectGraph().
 func (rpcapi *ClusterRPCAPI) ConnectGraph(ctx context.Context, in struct{}, out *api.ConnectGraph) error {
+	logger.Debugf("starting ClusterRPCAPI/ConnectGraph")
 	graph, err := rpcapi.c.ConnectGraph()
 	if err != nil {
 		return err
@@ -273,28 +285,33 @@ func (rpcapi *ClusterRPCAPI) ConnectGraph(ctx context.Context, in struct{}, out 
 
 // PeerRemove runs Cluster.PeerRm().
 func (rpcapi *ClusterRPCAPI) PeerRemove(ctx context.Context, in peer.ID, out *struct{}) error {
+	logger.Debugf("starting ClusterRPCAPI/PeerRemove")
 	return rpcapi.c.PeerRemove(ctx, in)
 }
 
 // Join runs Cluster.Join().
 func (rpcapi *ClusterRPCAPI) Join(ctx context.Context, in api.Multiaddr, out *struct{}) error {
+	logger.Debugf("starting ClusterRPCAPI/Join")
 	return rpcapi.c.Join(ctx, in.Value())
 }
 
 // StatusAll runs Cluster.StatusAll().
 func (rpcapi *ClusterRPCAPI) StatusAll(ctx context.Context, in <-chan api.TrackerStatus, out chan<- api.GlobalPinInfo) error {
+	logger.Debugf("starting ClusterRPCAPI/StatusAll")
 	filter := <-in
 	return rpcapi.c.StatusAll(ctx, filter, out)
 }
 
 // StatusAllLocal runs Cluster.StatusAllLocal().
 func (rpcapi *ClusterRPCAPI) StatusAllLocal(ctx context.Context, in <-chan api.TrackerStatus, out chan<- api.PinInfo) error {
+	logger.Debugf("starting ClusterRPCAPI/StatusAllLocal")
 	filter := <-in
 	return rpcapi.c.StatusAllLocal(ctx, filter, out)
 }
 
 // Status runs Cluster.Status().
 func (rpcapi *ClusterRPCAPI) Status(ctx context.Context, in api.Cid, out *api.GlobalPinInfo) error {
+	logger.Debugf("starting ClusterRPCAPI/Status")
 	pinfo, err := rpcapi.c.Status(ctx, in)
 	if err != nil {
 		return err
@@ -305,6 +322,7 @@ func (rpcapi *ClusterRPCAPI) Status(ctx context.Context, in api.Cid, out *api.Gl
 
 // StatusLocal runs Cluster.StatusLocal().
 func (rpcapi *ClusterRPCAPI) StatusLocal(ctx context.Context, in api.Cid, out *api.PinInfo) error {
+	logger.Debugf("starting ClusterRPCAPI/StatusLocal")
 	pinfo := rpcapi.c.StatusLocal(ctx, in)
 	*out = pinfo
 	return nil
@@ -312,16 +330,19 @@ func (rpcapi *ClusterRPCAPI) StatusLocal(ctx context.Context, in api.Cid, out *a
 
 // RecoverAll runs Cluster.RecoverAll().
 func (rpcapi *ClusterRPCAPI) RecoverAll(ctx context.Context, in <-chan struct{}, out chan<- api.GlobalPinInfo) error {
+	logger.Debugf("starting ClusterRPCAPI/RecoverAll")
 	return rpcapi.c.RecoverAll(ctx, out)
 }
 
 // RecoverAllLocal runs Cluster.RecoverAllLocal().
 func (rpcapi *ClusterRPCAPI) RecoverAllLocal(ctx context.Context, in <-chan struct{}, out chan<- api.PinInfo) error {
+	logger.Debugf("starting ClusterRPCAPI/RecoverAllLocal")
 	return rpcapi.c.RecoverAllLocal(ctx, out)
 }
 
 // Recover runs Cluster.Recover().
 func (rpcapi *ClusterRPCAPI) Recover(ctx context.Context, in api.Cid, out *api.GlobalPinInfo) error {
+	logger.Debugf("starting ClusterRPCAPI/Recover")
 	pinfo, err := rpcapi.c.Recover(ctx, in)
 	if err != nil {
 		return err
@@ -332,6 +353,7 @@ func (rpcapi *ClusterRPCAPI) Recover(ctx context.Context, in api.Cid, out *api.G
 
 // RecoverLocal runs Cluster.RecoverLocal().
 func (rpcapi *ClusterRPCAPI) RecoverLocal(ctx context.Context, in api.Cid, out *api.PinInfo) error {
+	logger.Debugf("starting ClusterRPCAPI/RecoverLocal")
 	pinfo, err := rpcapi.c.RecoverLocal(ctx, in)
 	if err != nil {
 		return err
@@ -343,6 +365,7 @@ func (rpcapi *ClusterRPCAPI) RecoverLocal(ctx context.Context, in api.Cid, out *
 // BlockAllocate returns allocations for blocks. This is used in the adders.
 // It's different from pin allocations when ReplicationFactor < 0.
 func (rpcapi *ClusterRPCAPI) BlockAllocate(ctx context.Context, in api.Pin, out *[]peer.ID) error {
+	logger.Debugf("starting ClusterRPCAPI/BlockAllocate")
 	if rpcapi.c.config.FollowerMode {
 		return errFollowerMode
 	}
@@ -393,6 +416,7 @@ func (rpcapi *ClusterRPCAPI) BlockAllocate(ctx context.Context, in api.Pin, out 
 
 // RepoGC performs garbage collection sweep on all peers' repos.
 func (rpcapi *ClusterRPCAPI) RepoGC(ctx context.Context, in struct{}, out *api.GlobalRepoGC) error {
+	logger.Debugf("starting ClusterRPCAPI/RepoGC")
 	res, err := rpcapi.c.RepoGC(ctx)
 	if err != nil {
 		return err
@@ -403,6 +427,7 @@ func (rpcapi *ClusterRPCAPI) RepoGC(ctx context.Context, in struct{}, out *api.G
 
 // RepoGCLocal performs garbage collection sweep only on the local peer's IPFS daemon.
 func (rpcapi *ClusterRPCAPI) RepoGCLocal(ctx context.Context, in struct{}, out *api.RepoGC) error {
+	logger.Debugf("starting ClusterRPCAPI/RepoGCLocal")
 	res, err := rpcapi.c.RepoGCLocal(ctx)
 	if err != nil {
 		return err
@@ -413,16 +438,19 @@ func (rpcapi *ClusterRPCAPI) RepoGCLocal(ctx context.Context, in struct{}, out *
 
 // SendInformerMetrics runs Cluster.sendInformerMetric().
 func (rpcapi *ClusterRPCAPI) SendInformerMetrics(ctx context.Context, in struct{}, out *struct{}) error {
+	logger.Debugf("starting ClusterRPCAPI/SendInformerMetrics")
 	return rpcapi.c.sendInformersMetrics(ctx)
 }
 
 // SendInformersMetrics runs Cluster.sendInformerMetric() on all informers.
 func (rpcapi *ClusterRPCAPI) SendInformersMetrics(ctx context.Context, in struct{}, out *struct{}) error {
+	logger.Debugf("starting ClusterRPCAPI/SendInformersMetrics")
 	return rpcapi.c.sendInformersMetrics(ctx)
 }
 
 // Alerts runs Cluster.Alerts().
 func (rpcapi *ClusterRPCAPI) Alerts(ctx context.Context, in struct{}, out *[]api.Alert) error {
+	logger.Debugf("starting ClusterRPCAPI/Alerts")
 	alerts := rpcapi.c.Alerts()
 	*out = alerts
 	return nil
@@ -430,6 +458,7 @@ func (rpcapi *ClusterRPCAPI) Alerts(ctx context.Context, in struct{}, out *[]api
 
 // IPFSID returns the current cached IPFS ID for a peer.
 func (rpcapi *ClusterRPCAPI) IPFSID(ctx context.Context, in peer.ID, out *api.IPFSID) error {
+	logger.Debugf("starting ClusterRPCAPI/IPFSID")
 	if in == "" {
 		in = rpcapi.c.host.ID()
 	}
@@ -451,6 +480,7 @@ func (rpcapi *PinTrackerRPCAPI) Track(ctx context.Context, in api.Pin, out *stru
 
 	ctx, span := trace.StartSpan(ctx, "rpc/tracker/Track")
 	defer span.End()
+	logger.Debugf("starting PinTrackerRPCAPI/Track")
 	return rpcapi.tracker.Track(ctx, in)
 }
 
@@ -458,6 +488,7 @@ func (rpcapi *PinTrackerRPCAPI) Track(ctx context.Context, in api.Pin, out *stru
 func (rpcapi *PinTrackerRPCAPI) Untrack(ctx context.Context, in api.Pin, out *struct{}) error {
 	ctx, span := trace.StartSpan(ctx, "rpc/tracker/Untrack")
 	defer span.End()
+	logger.Debugf("starting PinTrackerRPCAPI/Untrack")
 	return rpcapi.tracker.Untrack(ctx, in.Cid)
 }
 
@@ -465,7 +496,7 @@ func (rpcapi *PinTrackerRPCAPI) Untrack(ctx context.Context, in api.Pin, out *st
 func (rpcapi *PinTrackerRPCAPI) StatusAll(ctx context.Context, in <-chan api.TrackerStatus, out chan<- api.PinInfo) error {
 	ctx, span := trace.StartSpan(ctx, "rpc/tracker/StatusAll")
 	defer span.End()
-
+	logger.Debugf("starting PinTrackerRPCAPI/StatusAll")
 	select {
 	case <-ctx.Done():
 		close(out)
@@ -479,6 +510,7 @@ func (rpcapi *PinTrackerRPCAPI) StatusAll(ctx context.Context, in <-chan api.Tra
 func (rpcapi *PinTrackerRPCAPI) Status(ctx context.Context, in api.Cid, out *api.PinInfo) error {
 	ctx, span := trace.StartSpan(ctx, "rpc/tracker/Status")
 	defer span.End()
+	logger.Debugf("starting PinTrackerRPCAPI/Status")
 	pinfo := rpcapi.tracker.Status(ctx, in)
 	*out = pinfo
 	return nil
@@ -488,6 +520,7 @@ func (rpcapi *PinTrackerRPCAPI) Status(ctx context.Context, in api.Cid, out *api
 func (rpcapi *PinTrackerRPCAPI) RecoverAll(ctx context.Context, in <-chan struct{}, out chan<- api.PinInfo) error {
 	ctx, span := trace.StartSpan(ctx, "rpc/tracker/RecoverAll")
 	defer span.End()
+	logger.Debugf("starting PinTrackerRPCAPI/RecoverAll")
 	return rpcapi.tracker.RecoverAll(ctx, out)
 }
 
@@ -495,6 +528,7 @@ func (rpcapi *PinTrackerRPCAPI) RecoverAll(ctx context.Context, in <-chan struct
 func (rpcapi *PinTrackerRPCAPI) Recover(ctx context.Context, in api.Cid, out *api.PinInfo) error {
 	ctx, span := trace.StartSpan(ctx, "rpc/tracker/Recover")
 	defer span.End()
+	logger.Debugf("starting PinTrackerRPCAPI/Recover")
 	pinfo, err := rpcapi.tracker.Recover(ctx, in)
 	*out = pinfo
 	return err
@@ -502,6 +536,9 @@ func (rpcapi *PinTrackerRPCAPI) Recover(ctx context.Context, in api.Cid, out *ap
 
 // PinQueueSize runs PinTracker.PinQueueSize().
 func (rpcapi *PinTrackerRPCAPI) PinQueueSize(ctx context.Context, in struct{}, out *int64) error {
+	ctx, span := trace.StartSpan(ctx, "rpc/tracker/PinQueueSize")
+	defer span.End()
+	logger.Debugf("starting PinTrackerRPCAPI/PinQueueSize")
 	size, err := rpcapi.tracker.PinQueueSize(ctx)
 	*out = size
 	return err
@@ -513,19 +550,25 @@ func (rpcapi *PinTrackerRPCAPI) PinQueueSize(ctx context.Context, in struct{}, o
 
 // Pin runs IPFSConnector.Pin().
 func (rpcapi *IPFSConnectorRPCAPI) Pin(ctx context.Context, in api.Pin, out *struct{}) error {
-
 	ctx, span := trace.StartSpan(ctx, "rpc/ipfsconn/IPFSPin")
 	defer span.End()
+	logger.Debugf("starting IPFSConnectorRPCAPI/Pin")
 	return rpcapi.ipfs.Pin(ctx, in)
 }
 
 // Unpin runs IPFSConnector.Unpin().
 func (rpcapi *IPFSConnectorRPCAPI) Unpin(ctx context.Context, in api.Pin, out *struct{}) error {
+	ctx, span := trace.StartSpan(ctx, "rpc/ipfsconn/IPFSUnpin")
+	defer span.End()
+	logger.Debugf("starting IPFSConnectorRPCAPI/Unpin")
 	return rpcapi.ipfs.Unpin(ctx, in.Cid)
 }
 
 // PinLsCid runs IPFSConnector.PinLsCid().
 func (rpcapi *IPFSConnectorRPCAPI) PinLsCid(ctx context.Context, in api.Pin, out *api.IPFSPinStatus) error {
+	ctx, span := trace.StartSpan(ctx, "rpc/ipfsconn/IPFSPinLsCid")
+	defer span.End()
+	logger.Debugf("starting IPFSConnectorRPCAPI/PinLsCid")
 	b, err := rpcapi.ipfs.PinLsCid(ctx, in)
 	if err != nil {
 		return err
@@ -536,6 +579,7 @@ func (rpcapi *IPFSConnectorRPCAPI) PinLsCid(ctx context.Context, in api.Pin, out
 
 // PinLs runs IPFSConnector.PinLs().
 func (rpcapi *IPFSConnectorRPCAPI) PinLs(ctx context.Context, in <-chan []string, out chan<- api.IPFSPinInfo) error {
+	logger.Debugf("starting IPFSConnectorRPCAPI/PinLs")
 	select {
 	case <-ctx.Done():
 		close(out)
@@ -561,6 +605,9 @@ func (rpcapi *IPFSConnectorRPCAPI) ConfigKey(ctx context.Context, in string, out
 
 // RepoStat runs IPFSConnector.RepoStat().
 func (rpcapi *IPFSConnectorRPCAPI) RepoStat(ctx context.Context, in struct{}, out *api.IPFSRepoStat) error {
+	ctx, span := trace.StartSpan(ctx, "rpc/ipfsconn/IPFSRepoStat")
+	defer span.End()
+	logger.Debugf("starting IPFSConnectorRPCAPI/RepoStat")
 	res, err := rpcapi.ipfs.RepoStat(ctx)
 	if err != nil {
 		return err
@@ -571,6 +618,9 @@ func (rpcapi *IPFSConnectorRPCAPI) RepoStat(ctx context.Context, in struct{}, ou
 
 // SwarmPeers runs IPFSConnector.SwarmPeers().
 func (rpcapi *IPFSConnectorRPCAPI) SwarmPeers(ctx context.Context, in struct{}, out *[]peer.ID) error {
+	ctx, span := trace.StartSpan(ctx, "rpc/ipfsconn/IPFSSwarmPeers")
+	defer span.End()
+	logger.Debugf("starting IPFSConnectorRPCAPI/SwarmPeers")
 	res, err := rpcapi.ipfs.SwarmPeers(ctx)
 	if err != nil {
 		return err
@@ -582,11 +632,17 @@ func (rpcapi *IPFSConnectorRPCAPI) SwarmPeers(ctx context.Context, in struct{}, 
 // BlockStream runs IPFSConnector.BlockStream().
 func (rpcapi *IPFSConnectorRPCAPI) BlockStream(ctx context.Context, in <-chan api.NodeWithMeta, out chan<- struct{}) error {
 	defer close(out) // very important to do at the end
+	ctx, span := trace.StartSpan(ctx, "rpc/ipfsconn/IPFSBlockStream")
+	defer span.End()
+	logger.Debugf("starting IPFSConnectorRPCAPI/BlockStream")
 	return rpcapi.ipfs.BlockStream(ctx, in)
 }
 
 // BlockGet runs IPFSConnector.BlockGet().
 func (rpcapi *IPFSConnectorRPCAPI) BlockGet(ctx context.Context, in api.Cid, out *[]byte) error {
+	ctx, span := trace.StartSpan(ctx, "rpc/ipfsconn/IPFSBlockGet")
+	defer span.End()
+	logger.Debugf("starting IPFSConnectorRPCAPI/BlockGet")
 	res, err := rpcapi.ipfs.BlockGet(ctx, in)
 	if err != nil {
 		return err
@@ -597,6 +653,9 @@ func (rpcapi *IPFSConnectorRPCAPI) BlockGet(ctx context.Context, in api.Cid, out
 
 // Resolve runs IPFSConnector.Resolve().
 func (rpcapi *IPFSConnectorRPCAPI) Resolve(ctx context.Context, in string, out *api.Cid) error {
+	ctx, span := trace.StartSpan(ctx, "rpc/ipfsconn/IPFSResolve")
+	defer span.End()
+	logger.Debugf("starting IPFSConnectorRPCAPI/Resolve")
 	c, err := rpcapi.ipfs.Resolve(ctx, in)
 	if err != nil {
 		return err
@@ -613,6 +672,7 @@ func (rpcapi *IPFSConnectorRPCAPI) Resolve(ctx context.Context, in string, out *
 func (rpcapi *ConsensusRPCAPI) LogPin(ctx context.Context, in api.Pin, out *struct{}) error {
 	ctx, span := trace.StartSpan(ctx, "rpc/consensus/LogPin")
 	defer span.End()
+	logger.Debugf("starting ConsensusRPCAPI/LogPin")
 	return rpcapi.cons.LogPin(ctx, in)
 }
 
@@ -620,6 +680,7 @@ func (rpcapi *ConsensusRPCAPI) LogPin(ctx context.Context, in api.Pin, out *stru
 func (rpcapi *ConsensusRPCAPI) LogUnpin(ctx context.Context, in api.Pin, out *struct{}) error {
 	ctx, span := trace.StartSpan(ctx, "rpc/consensus/LogUnpin")
 	defer span.End()
+	logger.Debugf("starting ConsensusRPCAPI/LogUnpin")
 	return rpcapi.cons.LogUnpin(ctx, in)
 }
 
@@ -627,6 +688,7 @@ func (rpcapi *ConsensusRPCAPI) LogUnpin(ctx context.Context, in api.Pin, out *st
 func (rpcapi *ConsensusRPCAPI) AddPeer(ctx context.Context, in peer.ID, out *struct{}) error {
 	ctx, span := trace.StartSpan(ctx, "rpc/consensus/AddPeer")
 	defer span.End()
+	logger.Debugf("starting ConsensusRPCAPI/AddPeer")
 	return rpcapi.cons.AddPeer(ctx, in)
 }
 
@@ -634,11 +696,13 @@ func (rpcapi *ConsensusRPCAPI) AddPeer(ctx context.Context, in peer.ID, out *str
 func (rpcapi *ConsensusRPCAPI) RmPeer(ctx context.Context, in peer.ID, out *struct{}) error {
 	ctx, span := trace.StartSpan(ctx, "rpc/consensus/RmPeer")
 	defer span.End()
+	logger.Debugf("starting ConsensusRPCAPI/RmPeer")
 	return rpcapi.cons.RmPeer(ctx, in)
 }
 
 // Peers runs Consensus.Peers().
 func (rpcapi *ConsensusRPCAPI) Peers(ctx context.Context, in struct{}, out *[]peer.ID) error {
+	logger.Debugf("starting ConsensusRPCAPI/Peers")
 	peers, err := rpcapi.cons.Peers(ctx)
 	if err != nil {
 		return err
