@@ -5,8 +5,6 @@ import (
 	"github.com/ipfs/kubo/plugin"
 )
 
-var (
-	Plugins = []plugin.Plugin{
-		&hello.Plugin{},
-	}
-)
+var Plugins = []plugin.Plugin{
+	&hello.Plugin{},
+}
