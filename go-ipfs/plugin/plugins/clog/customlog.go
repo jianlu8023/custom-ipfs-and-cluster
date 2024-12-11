@@ -8,33 +8,36 @@ import (
 	"github.com/ipfs/kubo/plugin"
 )
 
+var log = logging.Logger("plugin/customlog")
+
 var Plugins = []plugin.Plugin{
-	&clogPlugin{},
+	&customLogLevelPlugin{},
 }
 
 const defaultLoggerLevel = "error"
 
-var _ plugin.Plugin = &clogPlugin{}
+var _ plugin.Plugin = &customLogLevelPlugin{}
 
 type loggerConfig struct {
 	Levels       map[string][]string `json:"Levels"`
 	DefaultLevel string              `json:"DefaultLevel"`
 }
 
-type clogPlugin struct {
+type customLogLevelPlugin struct {
 	conf loggerConfig
 }
 
-func (l *clogPlugin) Name() string {
+func (l *customLogLevelPlugin) Name() string {
 	return "datadog-logger"
 }
 
-func (l *clogPlugin) Version() string {
+func (l *customLogLevelPlugin) Version() string {
 	return "0.0.1"
 }
 
-// Set log levels for each system (logger)
-func (l *clogPlugin) Init(env *plugin.Environment) error {
+// Init Set log levels for each system (logger)
+func (l *customLogLevelPlugin) Init(env *plugin.Environment) error {
+	log.Debugf("starting init custom log plugin")
 	err := l.loadConfig(env)
 	if err != nil {
 		return err
@@ -48,9 +51,9 @@ func (l *clogPlugin) Init(env *plugin.Environment) error {
 	logging.SetAllLoggers(defaultLevel)
 
 	for level, subsystems := range l.conf.Levels {
-		// fmt.Println(">>> set log level: ", level, " for subsystems: ", subsystems)
+		// log.Debugf("setting level %v for subsystems %v", level, subsystems)
 		for _, subsystem := range subsystems {
-			// fmt.Println(">>> set log level for subsystem: ", subsystem)
+			log.Debugf("setting level %v for subsystem %v", level, subsystem)
 			if err := logging.SetLogLevel(subsystem, level); err != nil {
 				return fmt.Errorf("set log level failed for subsystem: %s. Error: %s", subsystem, err.Error())
 			}
@@ -60,19 +63,19 @@ func (l *clogPlugin) Init(env *plugin.Environment) error {
 	return nil
 }
 
-func (l *clogPlugin) loadConfig(env *plugin.Environment) error {
+func (l *customLogLevelPlugin) loadConfig(env *plugin.Environment) error {
 	// load config data
 	bytes, err := json.Marshal(env.Config)
 	if err != nil {
 		return err
 	}
 
-	// fmt.Println(">>> load config data: ", string(bytes))
-
 	if err = json.Unmarshal(bytes, &l.conf); err != nil {
 		return err
 	}
+	log.Debugf("loaded plugin config data %v", l.conf)
 	if l.conf.DefaultLevel == "" {
+		log.Debugf("default log level not set, setting to %v", defaultLoggerLevel)
 		l.conf.DefaultLevel = defaultLoggerLevel
 	}
 	return nil
