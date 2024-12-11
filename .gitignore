@@ -9,3 +9,6 @@ testdata/
 
 !testdata/ipfs/webui.car
 !testdata/ipfs/swarm.key
+
+!testdata/compose/docker-compose.yaml
+!testdata/compose/.env
