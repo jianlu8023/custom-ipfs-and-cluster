@@ -145,3 +145,10 @@ help:
 	@echo '  coverage     - Collects coverage info from unit tests and sharness'
 	@echo
 .PHONY: help
+
+docker:
+	docker build -t ipfs-image -f Dockerfile-adapt .
+	docker run --name tmp-make-ipfs -d --rm ipfs-image && sleep 4
+	docker exec tmp-make-ipfs sh -c "ipfs version --all"
+	docker kill tmp-make-ipfs
+.PHONY: docker
