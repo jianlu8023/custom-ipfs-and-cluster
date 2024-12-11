@@ -15,7 +15,7 @@ var (
 
 type Plugin struct{}
 
-var _ plugin.Plugin = (*Plugin)(nil)
+var _ plugin.PluginDaemon = (*Plugin)(nil)
 
 func (p *Plugin) Name() string {
 	return "hello"
