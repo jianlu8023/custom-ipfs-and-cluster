@@ -25,10 +25,6 @@ func (*helloPlugin) Version() string {
 
 func (*helloPlugin) Init(env *plugin.Environment) error {
 	fmt.Println("hello plugin init")
-	return nil
-}
-
-func (*helloPlugin) Close() error {
-	fmt.Println("hello plugin close")
+	fmt.Println("env ", env)
 	return nil
 }
