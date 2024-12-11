@@ -3,6 +3,7 @@ package hello
 import (
 	"fmt"
 
+	coreiface "github.com/ipfs/kubo/core/coreiface"
 	"github.com/ipfs/kubo/plugin"
 )
 
@@ -23,8 +24,17 @@ func (*helloPlugin) Version() string {
 	return "0.0.1"
 }
 
-func (*helloPlugin) Init(env *plugin.Environment) error {
+func (*helloPlugin) Init(*plugin.Environment) error {
 	fmt.Println("hello plugin init")
-	fmt.Println("env ", env)
+	return nil
+}
+
+func (*helloPlugin) Start(coreiface.CoreAPI) error {
+	fmt.Println("hello plugin start")
+	return nil
+}
+
+func (*helloPlugin) Close() error {
+	fmt.Println("hello plugin close")
 	return nil
 }

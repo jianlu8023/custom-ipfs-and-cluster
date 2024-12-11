@@ -48,9 +48,9 @@ func (l *clogPlugin) Init(env *plugin.Environment) error {
 	logging.SetAllLoggers(defaultLevel)
 
 	for level, subsystems := range l.conf.Levels {
-		fmt.Println(">>> set log level: ", level, " for subsystems: ", subsystems)
+		// fmt.Println(">>> set log level: ", level, " for subsystems: ", subsystems)
 		for _, subsystem := range subsystems {
-			fmt.Println(">>> set log level for subsystem: ", subsystem)
+			// fmt.Println(">>> set log level for subsystem: ", subsystem)
 			if err := logging.SetLogLevel(subsystem, level); err != nil {
 				return fmt.Errorf("set log level failed for subsystem: %s. Error: %s", subsystem, err.Error())
 			}
@@ -67,7 +67,7 @@ func (l *clogPlugin) loadConfig(env *plugin.Environment) error {
 		return err
 	}
 
-	fmt.Println(">>> load config data: ", string(bytes))
+	// fmt.Println(">>> load config data: ", string(bytes))
 
 	if err = json.Unmarshal(bytes, &l.conf); err != nil {
 		return err
