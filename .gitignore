@@ -3,12 +3,12 @@ log/
 
 testdata/
 
-!testdata/gaeger/docker-compose.yaml
+!testdata/local/jaeger/docker-compose.yaml
 
-!testdata/cluster/service.json
+!testdata/local/cluster/service.json
 
-!testdata/ipfs/webui.car
-!testdata/ipfs/swarm.key
+!testdata/local/ipfs/webui.car
+!testdata/local/ipfs/swarm.key
 
 !testdata/container/docker-compose.yaml
 !testdata/container/.env

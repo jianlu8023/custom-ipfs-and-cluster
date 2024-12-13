@@ -8,6 +8,32 @@ networks:
     driver: bridge
 
 services:
+  jaeger:
+    image: jaegertracing/all-in-one:1.62.0
+    networks:
+      ipfs:
+        ipv4_address: 99.99.97.2
+    restart: always
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - LOG_ENCODING=console
+      - LOG_LEVEL=debug
+      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+    ports:
+      - "5775:5775/udp"
+      - "6831-6832:6831-6832/udp"
+      - "5778:5778"
+      - "16686:16686"
+      - "14250:14250"
+      - "14268:14268"
+      - "14268:14268"
+      - "4317-4318:4317-4318"
+      - "9411:9411"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    container_name: jaeger
+
   ipfs:
     restart: always
     container_name: ipfs
@@ -27,6 +53,10 @@ services:
       - "8080:8080"
     volumes:
       - ./compose/ipfs:/data/ipfs
+    depends_on:
+      jaeger:
+        condition: service_healthy
+
 
   cluster:
     restart: always
