@@ -13,18 +13,28 @@ build: ipfs cluster
 
 ipfs:
 	@echo "starting ipfs"
-	$(MAKE) -C ../../go-ipfs docker
+	@if docker images | grep -q ipfs-image; then \
+  		echo "ipfs-image already exists"; \
+ 	else \
+		$(MAKE) -C ../../go-ipfs docker; \
+	fi
 	docker builder prune -a -f
 .PHONY: ipfs
 
 cluster:
 	@echo "starting cluster"
-	$(MAKE) -C ../../ipfs-cluster docker
-	docker rmi cluster-image-test
+	@if docker images | grep -q cluster-image; then \
+  		echo "cluster-image already exists"; \
+  	else \
+  		$(MAKE) -C ../../ipfs-cluster docker; \
+  	fi
+	@if docker images | grep -q cluster-image-test; then \
+  		docker rmi cluster-image-test; \
+  	fi
 	docker builder prune -a -f
 .PHONY: cluster
 
-clean: ipfs-clean cluster-clean compose-down image-clean
+clean: compose-down ipfs-clean cluster-clean image-clean
 	@echo "starting clean"
 .PHONY: clean
 
@@ -40,9 +50,30 @@ cluster-clean:
 
 image-clean:
 	@echo "starting image clean"
-	docker rmi ipfs-image
-	docker rmi cluster-image
-	docker rmi `docker images -f dangling=true`
+	@if docker images | grep -q ipfs-image; then \
+          echo "Removing ipfs-image"; \
+          docker rmi ipfs-image; \
+    else \
+          echo "ipfs-image does not exist, skipping remove"; \
+    fi
+	@if docker images | grep -q cluster-image; then \
+    	echo "Removing cluster-image"; \
+        docker rmi cluster-image; \
+    else \
+        echo "cluster-image does not exist, skipping remove"; \
+    fi
+	 @if docker images -f dangling=true  --format ".table"  | grep -q .; then \
+    	echo "Removing dangling images"; \
+        docker rmi `docker images -f dangling=true --format "{{.Repository}}:{{.Tag}}"`; \
+    else \
+        echo "No dangling images found, skipping remove"; \
+    fi
+	@if docker volume ls -q -f dangling=true --format ".table" | grep -q .; then \
+          echo "Removing all Docker volumes"; \
+          docker volume rm `docker volume ls -q -f dangling=true`; \
+    else \
+          echo "No Docker volumes found, skipping remove"; \
+    fi
 	docker builder prune -a -f
 .PHONY: image-clean
 
