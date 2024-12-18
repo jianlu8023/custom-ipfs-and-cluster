@@ -68,7 +68,7 @@ services:
       OTEL_EXPORTER_FILE_PATH: /data/ipfs/traces.json
       OTEL_EXPORTER_OTLP_INSECURE: true
       OTEL_TRACES_EXPORTER: otlp,file
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://192.168.58.110:4318
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
     networks:
       - ipfs
     ports:
@@ -105,7 +105,7 @@ services:
       CLUSTER_METRICS_ENABLESTATS: true
       CLUSTER_METRICS_PROMETHEUSENDPOINT: /ip4/0.0.0.0/tcp/8888
       CLUSTER_TRACING_ENABLETRACING: true
-      CLUSTER_TRACING_JAEGERAGENTENDPOINT: /ip4/192.168.58.110/udp/6831
+      CLUSTER_TRACING_JAEGERAGENTENDPOINT: /dns4/jaeger/udp/6831
     ports:
       - "9094:9094"
       - "9095:9095"
