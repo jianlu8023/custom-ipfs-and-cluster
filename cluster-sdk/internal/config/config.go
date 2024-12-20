@@ -5,9 +5,11 @@ import (
 )
 
 const (
-	Timeout5  = 5 * time.Second
-	Timeout10 = 10 * time.Second
-	Timeout3  = 3 * time.Second
+	Timeout120 = 2 * time.Minute
+	Timeout5   = 5 * time.Second
+	Timeout10  = 10 * time.Second
+	Timeout3   = 3 * time.Second
+	Retries    = 5
 )
 
 type Config struct {

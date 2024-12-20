@@ -6,7 +6,6 @@ import (
 
 	"github.com/ipfs-cluster/ipfs-cluster/api"
 	"ipfs-cluster/internal/logger"
-
 	"ipfs-cluster/sdk"
 )
 
@@ -17,11 +16,13 @@ import (
 func OneFile(conf *Info) (*api.AddedOutput, error) {
 	logger.GetIPFSLogger().Debugf(">>> 开始上传 %v 文件到IPFS", conf.FileName)
 
-	params := api.DefaultAddParams()
-	// 循环添加文件
-	paths := make([]string, 0)
-	paths = append(paths, conf.FilePath)
+	errCh := make(chan error, 1)
 
+	params := api.DefaultAddParams()
+
+	paths := []string{
+		conf.FilePath,
+	}
 	// 设置集群中副本情况，最小和最大
 	if conf.ReplicationFactorMin != 0 {
 		params.ReplicationFactorMin = conf.ReplicationFactorMin
@@ -65,24 +66,32 @@ func OneFile(conf *Info) (*api.AddedOutput, error) {
 	// p.HashFun = c.String("hash")
 
 	params.CidVersion = 1
+	out := make(chan api.AddedOutput, 1)
 
-	out := make(chan api.AddedOutput)
-	// ctx, cancelFunc := context.WithTimeout(context.Background(), config.Timeout10)
-	// ctx, cancelFunc := context.WithCancel(context.Background())
-	// defer cancelFunc()
-	ctx := context.Background()
-	go func(c context.Context) {
-		if err := sdk.GetSDK().Add(c, paths, params, out); err != nil {
+	go func() {
+		ctx := context.Background()
+		// ctx, cancelFunc := context.WithTimeout(context.Background(), config.Timeout10)
+		// ctx, cancelFunc := context.WithCancel(context.Background())
+		// defer cancelFunc()
+		if err := sdk.GetSDK().Add(ctx, paths, params, out); err != nil {
 			logger.GetIPFSLogger().Errorf(">>> 添加文件 %v 失败 %v", conf.FileName, err)
+			errCh <- err
+			close(errCh)
+			return
+		} else {
+			errCh <- nil
+			close(errCh)
 		}
-	}(ctx)
+	}()
 
 	select {
-	case outed := <-out:
-		logger.GetIPFSLogger().Debugf(">>> 添加文件 %v 成功", conf.FileName)
-		return &outed, nil
-	case <-ctx.Done():
-		logger.GetIPFSLogger().Errorf(">>> 添加文件 %v 超时", conf.FileName)
-		return nil, ctx.Err()
+	case err := <-errCh:
+		if err != nil {
+			logger.GetIPFSLogger().Debugf(">>> 文件 %v 上传失败，错误: %v", conf.FileName, err)
+			return nil, err
+		}
+		logger.GetIPFSLogger().Debugf(">>> 文件 %v 上传成功", conf.FileName)
+		result := <-out
+		return &result, nil
 	}
 }

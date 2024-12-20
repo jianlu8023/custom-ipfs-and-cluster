@@ -5,16 +5,16 @@ import (
 	"go.uber.org/zap"
 )
 
-var IPFSLogger = glog.NewSugaredLogger(&glog.Config{
+var ipfsLogger = glog.NewSugaredLogger(&glog.Config{
 	LogLevel:    "debug",
 	DevelopMode: false,
-	StackLevel:  "error",
+	StackLevel:  "",
 	ModuleName:  "[IPFS]",
-	Caller:      true,
+	Caller:      false,
 },
 	glog.WithConsoleFormat(),
 )
 
 func GetIPFSLogger() *zap.SugaredLogger {
-	return IPFSLogger
+	return ipfsLogger
 }

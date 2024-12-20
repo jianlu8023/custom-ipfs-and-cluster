@@ -1,12 +1,13 @@
 package ipfs_cluster
 
 import (
+	"strconv"
+
 	rclient "github.com/ipfs-cluster/ipfs-cluster/api/rest/client"
-	"github.com/multiformats/go-multiaddr"
 	"ipfs-cluster/internal/config"
 	"ipfs-cluster/internal/logger"
-
 	"ipfs-cluster/pkg/addr/api"
+
 	"ipfs-cluster/sdk"
 	"ipfs-cluster/version"
 )
@@ -29,22 +30,33 @@ func InitSdk(host, userName, passWord string, port int, protocol string) bool {
 		UserName: userName,
 		PassWord: passWord,
 	}
-	apiAddr, err := api.GetAPIAddr(c)
+	apiMultiAddr, err := api.GetAPIAddr(c)
 	if err != nil {
-		logger.GetIPFSLogger().Errorf(">>> 获取解析API地址失败 %v", err)
+		logger.GetIPFSLogger().Errorf(">>> 解析API地址生成API MultiAddress失败 %v", err)
 		return false
 	}
-	newMultiAddr, err := multiaddr.NewMultiaddr(apiAddr)
+
+	proxyMultiAddr, err := api.GetProxyAddr(c)
 	if err != nil {
-		logger.GetIPFSLogger().Errorf(">>> 解析API地址生成MultiAddress失败 %v", err)
+		logger.GetIPFSLogger().Errorf(">>> 解析API地址生成PROXY MultiAddress失败 %v", err)
 		return false
 	}
-	s, err := rclient.NewDefaultClient(&rclient.Config{
-		DisableKeepAlives: true,
-		Password:          c.PassWord,
-		Username:          c.UserName,
-		APIAddr:           newMultiAddr,
-	})
+	s, err := rclient.NewLBClient(
+		&rclient.Failover{},
+		[]*rclient.Config{
+			{
+				Host:              host,
+				Port:              strconv.Itoa(port),
+				DisableKeepAlives: true,
+				Password:          c.PassWord,
+				Username:          c.UserName,
+				APIAddr:           apiMultiAddr,
+				ProxyAddr:         proxyMultiAddr,
+				LogLevel:          "debug",
+				Timeout:           config.Timeout120,
+			},
+		},
+		config.Retries)
 	sdk.SetSDK(s)
 	err = version.Version()
 	if err != nil {

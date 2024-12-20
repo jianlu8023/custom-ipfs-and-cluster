@@ -4,10 +4,10 @@ MAINTAINER Hector Sanjuan <code@hector.link>
 # This dockerfile builds and runs ipfs-cluster-service.
 ARG TARGETPLATFORM TARGETOS TARGETARCH
 
-ENV GOPATH      /go
-ENV SRC_PATH    $GOPATH/src/github.com/ipfs-cluster/ipfs-cluster
-ENV GOPROXY     https://goproxy.cn,direct
-#ENV GOPROXY     https://proxy.golang.org
+ENV GOPATH=/go
+ENV SRC_PATH=$GOPATH/src/github.com/ipfs-cluster/ipfs-cluster
+ENV GOPROXY=https://goproxy.cn,direct
+#ENV GOPROXY=https://proxy.golang.org
 
 COPY --chown=1000:users go.* $SRC_PATH/
 WORKDIR $SRC_PATH
@@ -34,10 +34,10 @@ RUN sed -e 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' -i /etc/apk/repositor
 # Install binaries for $TARGETARCH
 RUN apk add --no-cache tini su-exec ca-certificates
 
-ENV GOPATH                 /go
-ENV SRC_PATH               /go/src/github.com/ipfs-cluster/ipfs-cluster
-ENV IPFS_CLUSTER_PATH      /data/ipfs-cluster
-ENV IPFS_CLUSTER_CONSENSUS crdt
+ENV GOPATH=/go
+ENV SRC_PATH=/go/src/github.com/ipfs-cluster/ipfs-cluster
+ENV IPFS_CLUSTER_PATH=/data/ipfs-cluster
+ENV IPFS_CLUSTER_CONSENSUS=crdt
 
 EXPOSE 9094
 EXPOSE 9095

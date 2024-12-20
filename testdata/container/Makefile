@@ -18,7 +18,6 @@ ipfs:
  	else \
 		$(MAKE) -C ../../go-ipfs docker; \
 	fi
-	docker builder prune -a -f
 .PHONY: ipfs
 
 cluster:
@@ -31,7 +30,6 @@ cluster:
 	@if docker images | grep -q cluster-image-test; then \
   		docker rmi cluster-image-test; \
   	fi
-	docker builder prune -a -f
 .PHONY: cluster
 
 clean: compose-down ipfs-clean cluster-clean image-clean
