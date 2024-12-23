@@ -4,13 +4,13 @@ import (
 	"context"
 	"io"
 
-	tar "github.com/ipfs/boxo/tar"
+	"github.com/ipfs/boxo/tar"
 	shell "github.com/ipfs/go-ipfs-api"
 	"ipfs-cluster/internal/logger"
 )
 
 func Cat(s *shell.Shell, path string) (io.ReadCloser, error) {
-	logger.GetIPFSLogger().Debugf("starting cat %v from ipfs node", path)
+	logger.GetIPFSLogger().Debugf("starting cat %v from myself ipfs node", path)
 	resp, err := s.Request("cat", path).
 		Option("decrypt", true).
 		Send(context.Background())
@@ -25,7 +25,7 @@ func Cat(s *shell.Shell, path string) (io.ReadCloser, error) {
 }
 
 func Get(s *shell.Shell, hash, outdir string) error {
-	logger.GetIPFSLogger().Debugf("starting get %v from ipfs node", hash)
+	logger.GetIPFSLogger().Debugf("starting get %v from myself ipfs node", hash)
 	resp, err := s.Request("get", hash).
 		Option("create", true).
 		Option("decrypt", true).

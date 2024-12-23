@@ -25,16 +25,16 @@ func ValidAddr(address []api.Multiaddr) (string, error) {
 	for _, addr := range address {
 		ip, err := addr.ValueForProtocol(4)
 		if err != nil {
-			logger.GetIPFSLogger().Errorf(">>> 解析MultiAddress失败 %v", err)
+			logger.GetIPFSLogger().Errorf("parse multiAddress get host error %v", err)
 			return "", err
 		}
 		port, err := addr.ValueForProtocol(6)
 		if err != nil {
-			logger.GetIPFSLogger().Errorf(">>> 解析MultiAddress失败 %v", err)
+			logger.GetIPFSLogger().Errorf("parse multiAddress get port error %v", err)
 			return "", err
 		}
 		if fmt.Sprintf("%s:%s", ip, port) == localAddr {
-			logger.GetIPFSLogger().Debugf(">>> 跳过本机地址")
+			logger.GetIPFSLogger().Debugf("skip localhost address ")
 			continue
 		}
 		if checkIp(ip, port) {
@@ -59,7 +59,7 @@ func checkIp(ip string, port string) bool {
 		defer func(dial net.Conn) {
 			err := dial.Close()
 			if err != nil {
-				logger.GetIPFSLogger().Errorf(">>> 连接 %v 失败 %v", addr, err)
+				logger.GetIPFSLogger().Errorf("close connect %v error %v", addr, err)
 			}
 		}(dial)
 		return true

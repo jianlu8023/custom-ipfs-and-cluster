@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/ipfs-cluster/ipfs-cluster/api"
+	"github.com/jianlu8023/go-tools/pkg/format/json"
 	"ipfs-cluster/internal/logger"
 	"ipfs-cluster/sdk"
 )
@@ -74,7 +75,7 @@ func OneFile(conf *Info) (*api.AddedOutput, error) {
 		// ctx, cancelFunc := context.WithCancel(context.Background())
 		// defer cancelFunc()
 		if err := sdk.GetSDK().Add(ctx, paths, params, out); err != nil {
-			logger.GetIPFSLogger().Errorf(">>> 添加文件 %v 失败 %v", conf.FileName, err)
+			// logger.GetIPFSLogger().Errorf(">>> 添加文件 %v 失败 %v", conf.FileName, err)
 			errCh <- err
 			close(errCh)
 			return
@@ -87,11 +88,16 @@ func OneFile(conf *Info) (*api.AddedOutput, error) {
 	select {
 	case err := <-errCh:
 		if err != nil {
-			logger.GetIPFSLogger().Debugf(">>> 文件 %v 上传失败，错误: %v", conf.FileName, err)
+			logger.GetIPFSLogger().Errorf(">>> 文件 %v 上传失败，错误: %v", conf.FileName, err)
 			return nil, err
 		}
 		logger.GetIPFSLogger().Debugf(">>> 文件 %v 上传成功", conf.FileName)
 		result := <-out
+		toJSON, _ := json.ToJSON(result)
+		// if err != nil {
+		//     logger.GetIPFSLogger().Errorf("upload file result to json error %v", err)
+		// }
+		logger.GetIPFSLogger().Debugf("upload file %v to ipfs cluster success result %v", conf.FileName, toJSON)
 		return &result, nil
 	}
 }

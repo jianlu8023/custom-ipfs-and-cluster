@@ -14,13 +14,13 @@ import (
 // @return error 错误信息
 // @example DownloadFile("QmXY2gC5d86QK129MQKF9R9Kprrkv9zm7xJ6N63bEK9uXG", "/path/to/file") => nil
 func OneFile(cid string, path string) error {
-	logger.GetIPFSLogger().Debugf(">>> 开始从IPFS下载CID %v 对应文件 ", cid)
+	logger.GetIPFSLogger().Debugf("starting download file %v from ipfs cluster", cid)
 	ctx := context.Background()
 	ipfs := sdk.GetSDK().IPFS(ctx)
 
 	err := myshell.Get(ipfs, cid, path)
 	if err != nil {
-		logger.GetIPFSLogger().Errorf(">>> 下载CID %v 对应文件失败: %v", cid, err)
+		logger.GetIPFSLogger().Errorf("download file %v error %v", cid, err)
 		return err
 	}
 	return nil

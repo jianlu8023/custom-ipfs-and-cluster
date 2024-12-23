@@ -60,7 +60,7 @@ func GetProxyAddr(config *config.Config) (multiaddr.Multiaddr, error) {
 func newMultiAddr(addr string) (multiaddr.Multiaddr, error) {
 	apiMultiAddr, err := multiaddr.NewMultiaddr(addr)
 	if err != nil {
-		logger.GetIPFSLogger().Errorf(">>> 生成MultiAddress失败 %v", err)
+		logger.GetIPFSLogger().Errorf("convert to multiAddress error %v", err)
 		return nil, err
 	}
 	return apiMultiAddr, nil

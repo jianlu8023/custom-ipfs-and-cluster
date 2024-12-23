@@ -5,6 +5,7 @@ import (
 
 	"github.com/ipfs-cluster/ipfs-cluster/api"
 	shell "github.com/ipfs/go-ipfs-api"
+	"github.com/jianlu8023/go-tools/pkg/format/json"
 	"ipfs-cluster/internal/logger"
 
 	"ipfs-cluster/sdk"
@@ -18,14 +19,14 @@ func Delete(cid string) (bool, error) {
 
 	decodeCid, err := api.DecodeCid(cid)
 	if err != nil {
-		logger.GetIPFSLogger().Errorf(">>> 解析CID失败 %v", err)
+		logger.GetIPFSLogger().Errorf("parse cid error %v", err)
 		return false, err
 	}
 
 	ctx := context.Background()
 	_, err = sdk.GetSDK().Unpin(ctx, decodeCid)
 	if err != nil {
-		logger.GetIPFSLogger().Errorf(">>> 删除CID %v 失败 %v", cid, err)
+		logger.GetIPFSLogger().Errorf("delete cid %v error %v", cid, err)
 		return false, err
 	}
 	return true, nil
@@ -40,13 +41,13 @@ func Delete(cid string) (bool, error) {
 func WithGarbageCollection(cid string) (bool, error) {
 	_, err := Delete(cid)
 	if err != nil {
-		logger.GetIPFSLogger().Errorf(">>> 删除CID %v 失败 %v", cid, err)
+		logger.GetIPFSLogger().Errorf("delete cid %v error %v", cid, err)
 		return false, err
 	}
 
 	_, err = GarbageCollection()
 	if err != nil {
-		logger.GetIPFSLogger().Errorf(">>> 删除CID %v 后进行垃圾回收失败 %v", cid, err)
+		logger.GetIPFSLogger().Errorf("gc error %v", err)
 		return false, err
 	}
 	return true, nil
@@ -60,10 +61,11 @@ func GarbageCollection() (bool, error) {
 	ctx := context.Background()
 	gc, err := sdk.GetSDK().RepoGC(ctx, false)
 	if err != nil {
-		logger.GetIPFSLogger().Errorf(">>> 集群垃圾回收失败 %v", err)
+		logger.GetIPFSLogger().Errorf("ipfs cluster gc error %v", err)
 		return false, err
 	}
-	logger.GetIPFSLogger().Debugf(">>> 集群垃圾回收结果 %v", gc)
+	toJSON, _ := json.ToJSON(gc)
+	logger.GetIPFSLogger().Debugf("ipfs cluster gc result %v", toJSON)
 	return true, nil
 }
 
@@ -77,7 +79,7 @@ func OnTargetNode(cid string, targetNode string) (bool, error) {
 	sh := shell.NewShell(targetNode)
 	err := sh.Unpin(cid)
 	if err != nil {
-		logger.GetIPFSLogger().Errorf(">>> 在目标节点 %v 删除CID %v 失败 %v", targetNode, cid, err)
+		logger.GetIPFSLogger().Errorf("delete cid %v on %v error %v", cid, targetNode, err)
 		return false, err
 	}
 	return true, nil
@@ -91,23 +93,22 @@ func OnTargetNode(cid string, targetNode string) (bool, error) {
 func OnTargetNodeWithGarbageCollection(cid string, targetNode string) (bool, error) {
 	_, err := OnTargetNode(cid, targetNode)
 	if err != nil {
-		logger.GetIPFSLogger().Errorf(">>> 在目标节点 %v 删除CID %v 失败 %v", targetNode, cid, err)
+		logger.GetIPFSLogger().Errorf("delete cid %v on %v error %v", cid, targetNode, err)
 		return false, err
 	}
 
 	ctx := context.Background()
 	sh := shell.NewShell(targetNode)
-	err = sh.Request("repo/gc", cid).
-		Option("recursive", true).
-		Exec(ctx, nil)
 
-	if err != nil {
-		logger.GetIPFSLogger().Errorf(">>> 在目标节点 %v 垃圾回收失败 %v", targetNode, err)
+	if err = sh.Request("repo/gc", cid).
+		Option("recursive", true).
+		Exec(ctx, nil); err != nil {
+		logger.GetIPFSLogger().Errorf("ipfs gc on %v error %v", targetNode, err)
 		return false, err
 	}
 	_, err = GarbageCollection()
 	if err != nil {
-		logger.GetIPFSLogger().Errorf(">>> 集群垃圾回收失败 %v", err)
+		logger.GetIPFSLogger().Errorf("ipfs cluster gc error %v", err)
 		return false, err
 	}
 	return true, nil

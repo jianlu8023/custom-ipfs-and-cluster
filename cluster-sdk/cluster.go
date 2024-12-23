@@ -20,7 +20,7 @@ import (
 // @param protocol string 协议 TCP/UDP
 // @return bool 是否成功
 func InitSdk(host, userName, passWord string, port int, protocol string) bool {
-	logger.GetIPFSLogger().Debugf(">>> 开始尝试连接IPFS CLUSTER集群")
+	logger.GetIPFSLogger().Debugf("starting connect ipfs cluster")
 	// 初始化sdk
 	var err error
 	c := &config.Config{
@@ -52,8 +52,9 @@ func InitSdk(host, userName, passWord string, port int, protocol string) bool {
 				Username:          c.UserName,
 				APIAddr:           apiMultiAddr,
 				ProxyAddr:         proxyMultiAddr,
-				LogLevel:          "debug",
-				Timeout:           config.Timeout120,
+				// LogLevel:          "debug",
+				LogLevel: "info",
+				Timeout:  config.Timeout120,
 			},
 		},
 		config.Retries)
@@ -63,6 +64,6 @@ func InitSdk(host, userName, passWord string, port int, protocol string) bool {
 		logger.GetIPFSLogger().Errorf(">>> 获取版本信息失败 %v", err)
 		return false
 	}
-
+	logger.GetIPFSLogger().Debugf("connect ipfs cluster success")
 	return true
 }
