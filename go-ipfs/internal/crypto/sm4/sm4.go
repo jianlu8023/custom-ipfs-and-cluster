@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	key   = "xinjianglihuasuo"
+	key   = "1234567887654321"
 	ivKey = ""
 )
 
