@@ -10,7 +10,7 @@ ENV GOPROXY=https://goproxy.cn,direct
 # Download packages first so they can be cached.
 COPY go.mod go.sum $SRC_DIR/
 RUN cd $SRC_DIR \
-  && go mod download
+  && go mod download -x
 
 COPY . $SRC_DIR
 
